@@ -58,24 +58,43 @@ public enum AVAudioServiceType : int
 /// <summary>Audio channel layout utility functions</summary>
 public enum AVChannel : int
 {
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_NONE = -1,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_FRONT_LEFT = 0,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_FRONT_RIGHT = 1,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_FRONT_CENTER = 2,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_LOW_FREQUENCY = 3,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_BACK_LEFT = 4,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_BACK_RIGHT = 5,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_FRONT_LEFT_OF_CENTER = 6,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_FRONT_RIGHT_OF_CENTER = 7,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_BACK_CENTER = 8,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_SIDE_LEFT = 9,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_SIDE_RIGHT = 10,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_CENTER = 11,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_FRONT_LEFT = 12,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_FRONT_CENTER = 13,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_FRONT_RIGHT = 14,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_BACK_LEFT = 15,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_BACK_CENTER = 16,
+    /// <summary>Invalid channel index</summary>
     @AV_CHAN_TOP_BACK_RIGHT = 17,
     /// <summary>Stereo downmix.</summary>
     @AV_CHAN_STEREO_LEFT = 29,
@@ -109,6 +128,8 @@ public enum AVChannel : int
     @AV_CHAN_TOP_SURROUND_LEFT = 43,
     /// <summary>-110 degrees, Rvs, TpRS</summary>
     @AV_CHAN_TOP_SURROUND_RIGHT = 44,
+    @AV_CHAN_BINAURAL_LEFT = 61,
+    @AV_CHAN_BINAURAL_RIGHT = 62,
     /// <summary>Channel is empty can be safely skipped.</summary>
     @AV_CHAN_UNUSED = 512,
     /// <summary>Channel contains data, but its position is unknown.</summary>
@@ -163,6 +184,7 @@ public enum AVClassCategory : int
     @AV_CLASS_CATEGORY_BITSTREAM_FILTER = 8,
     @AV_CLASS_CATEGORY_SWSCALER = 9,
     @AV_CLASS_CATEGORY_SWRESAMPLER = 10,
+    @AV_CLASS_CATEGORY_HWDEVICE = 11,
     @AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT = 40,
     @AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT = 41,
     @AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT = 42,
@@ -171,6 +193,12 @@ public enum AVClassCategory : int
     @AV_CLASS_CATEGORY_DEVICE_INPUT = 45,
     /// <summary>not part of ABI/API</summary>
     @AV_CLASS_CATEGORY_NB = 46,
+}
+
+public enum AVClassStateFlags : int
+{
+    /// <summary>Object initialization has finished and it is now in the &apos;runtime&apos; stage. This affects e.g. what options can be set on the object (only AV_OPT_FLAG_RUNTIME_PARAM options can be set on initialized objects).</summary>
+    @AV_CLASS_STATE_INITIALIZED = 1,
 }
 
 public enum AVCodecConfig : int
@@ -465,6 +493,11 @@ public enum AVCodecID : int
     @AV_CODEC_ID_RTV1 = 267,
     @AV_CODEC_ID_VMIX = 268,
     @AV_CODEC_ID_LEAD = 269,
+    @AV_CODEC_ID_DNXUC = 270,
+    @AV_CODEC_ID_RV60 = 271,
+    @AV_CODEC_ID_JPEGXL_ANIM = 272,
+    @AV_CODEC_ID_APV = 273,
+    @AV_CODEC_ID_PRORES_RAW = 274,
     /// <summary>A dummy id pointing at the start of audio codecs</summary>
     @AV_CODEC_ID_FIRST_AUDIO = 65536,
     @AV_CODEC_ID_PCM_S16LE = 65536,
@@ -556,6 +589,8 @@ public enum AVCodecID : int
     @AV_CODEC_ID_ADPCM_IMA_MOFLEX = 69681,
     @AV_CODEC_ID_ADPCM_IMA_ACORN = 69682,
     @AV_CODEC_ID_ADPCM_XMD = 69683,
+    @AV_CODEC_ID_ADPCM_IMA_XBOX = 69684,
+    @AV_CODEC_ID_ADPCM_SANYO = 69685,
     @AV_CODEC_ID_AMR_NB = 73728,
     @AV_CODEC_ID_AMR_WB = 73729,
     @AV_CODEC_ID_RA_144 = 77824,
@@ -678,6 +713,7 @@ public enum AVCodecID : int
     @AV_CODEC_ID_OSQ = 86120,
     @AV_CODEC_ID_QOA = 86121,
     @AV_CODEC_ID_LC3 = 86122,
+    @AV_CODEC_ID_G728 = 86123,
     /// <summary>A dummy ID pointing at the start of subtitle codecs.</summary>
     @AV_CODEC_ID_FIRST_SUBTITLE = 94208,
     @AV_CODEC_ID_DVD_SUBTITLE = 94208,
@@ -707,6 +743,7 @@ public enum AVCodecID : int
     @AV_CODEC_ID_HDMV_TEXT_SUBTITLE = 94231,
     @AV_CODEC_ID_TTML = 94232,
     @AV_CODEC_ID_ARIB_CAPTION = 94233,
+    @AV_CODEC_ID_IVTV_VBI = 94234,
     /// <summary>A dummy ID pointing at the start of various fake codecs.</summary>
     @AV_CODEC_ID_FIRST_UNKNOWN = 98304,
     @AV_CODEC_ID_TTF = 98304,
@@ -723,6 +760,7 @@ public enum AVCodecID : int
     @AV_CODEC_ID_BIN_DATA = 98314,
     @AV_CODEC_ID_SMPTE_2038 = 98315,
     @AV_CODEC_ID_LCEVC = 98316,
+    @AV_CODEC_ID_SMPTE_436M_ANC = 98317,
     /// <summary>codec_id is not known (like AV_CODEC_ID_NONE) but lavf should attempt to identify it</summary>
     @AV_CODEC_ID_PROBE = 102400,
     /// <summary>_FAKE_ codec to indicate a raw MPEG-2 TS stream (only used by libavformat)</summary>
@@ -962,7 +1000,7 @@ public enum AVFrameSideDataType : int
     @AV_FRAME_DATA_AFD = 7,
     /// <summary>Motion vectors exported by some codecs (on demand through the export_mvs flag set in the libavcodec AVCodecContext flags2 option). The data is the AVMotionVector struct defined in libavutil/motion_vector.h.</summary>
     @AV_FRAME_DATA_MOTION_VECTORS = 8,
-    /// <summary>Recommmends skipping the specified number of samples. This is exported only if the &quot;skip_manual&quot; AVOption is set in libavcodec. This has the same format as AV_PKT_DATA_SKIP_SAMPLES.</summary>
+    /// <summary>Recommends skipping the specified number of samples. This is exported only if the &quot;skip_manual&quot; AVOption is set in libavcodec. This has the same format as AV_PKT_DATA_SKIP_SAMPLES.</summary>
     @AV_FRAME_DATA_SKIP_SAMPLES = 9,
     /// <summary>This side data must be associated with an audio frame and corresponds to enum AVAudioServiceType defined in avcodec.h.</summary>
     @AV_FRAME_DATA_AUDIO_SERVICE_TYPE = 10,
@@ -1004,6 +1042,8 @@ public enum AVFrameSideDataType : int
     @AV_FRAME_DATA_LCEVC = 28,
     /// <summary>This side data must be associated with a video frame. The presence of this side data indicates that the video stream is composed of multiple views (e.g. stereoscopic 3D content, cf. H.264 Annex H or H.265 Annex G). The data is an int storing the view ID.</summary>
     @AV_FRAME_DATA_VIEW_ID = 29,
+    /// <summary>This side data contains information about the reference display width(s) and reference viewing distance(s) as well as information about the corresponding reference stereo pair(s), i.e., the pair(s) of views to be displayed for the viewer&apos;s left and right eyes on the reference display at the reference viewing distance. The payload is the AV3DReferenceDisplaysInfo struct defined in libavutil/tdrdi.h.</summary>
+    @AV_FRAME_DATA_3D_REFERENCE_DISPLAYS = 30,
 }
 
 /// <summary>Option for overlapping elliptical pixel selectors in an image.</summary>
@@ -1028,6 +1068,8 @@ public enum AVHWDeviceType : int
     @AV_HWDEVICE_TYPE_MEDIACODEC = 10,
     @AV_HWDEVICE_TYPE_VULKAN = 11,
     @AV_HWDEVICE_TYPE_D3D12VA = 12,
+    @AV_HWDEVICE_TYPE_AMF = 13,
+    @AV_HWDEVICE_TYPE_OHCODEC = 14,
 }
 
 public enum AVHWFrameTransferDirection : int
@@ -1170,7 +1212,7 @@ public enum AVPacketSideDataType : int
     @AV_PKT_DATA_FALLBACK_TRACK = 9,
     /// <summary>This side data corresponds to the AVCPBProperties struct.</summary>
     @AV_PKT_DATA_CPB_PROPERTIES = 10,
-    /// <summary>Recommmends skipping the specified number of samples</summary>
+    /// <summary>Recommends skipping the specified number of samples</summary>
     @AV_PKT_DATA_SKIP_SAMPLES = 11,
     /// <summary>An AV_PKT_DATA_JP_DUALMONO side data packet indicates that the packet may contain &quot;dual mono&quot; audio specific to Japanese DTV and if it is true, recommends only the selected channel to be used.</summary>
     @AV_PKT_DATA_JP_DUALMONO = 12,
@@ -1224,8 +1266,12 @@ public enum AVPacketSideDataType : int
     @AV_PKT_DATA_FRAME_CROPPING = 36,
     /// <summary>Raw LCEVC payload data, as a uint8_t array, with NAL emulation bytes intact.</summary>
     @AV_PKT_DATA_LCEVC = 37,
+    /// <summary>This side data contains information about the reference display width(s) and reference viewing distance(s) as well as information about the corresponding reference stereo pair(s), i.e., the pair(s) of views to be displayed for the viewer&apos;s left and right eyes on the reference display at the reference viewing distance. The payload is the AV3DReferenceDisplaysInfo struct defined in libavutil/tdrdi.h.</summary>
+    @AV_PKT_DATA_3D_REFERENCE_DISPLAYS = 38,
+    /// <summary>Contains the last received RTCP SR (Sender Report) information in the form of the AVRTCPSenderReport struct.</summary>
+    @AV_PKT_DATA_RTCP_SR = 39,
     /// <summary>The number of side data types. This is not part of the public API/ABI in the sense that it may change when new side data types are added. This must stay the last enum value. If its value becomes huge, some code using it needs to be updated as it assumes it to be smaller than other limits.</summary>
-    @AV_PKT_DATA_NB = 38,
+    @AV_PKT_DATA_NB = 40,
 }
 
 /// <summary>@{</summary>
@@ -1681,13 +1727,13 @@ public enum AVPixelFormat : int
     @AV_PIX_FMT_P416BE = 203,
     /// <summary>interleaved chroma YUV 4:4:4, 48bpp, little-endian</summary>
     @AV_PIX_FMT_P416LE = 204,
-    /// <summary>packed VUYA 4:4:4, 32bpp, VUYAVUYA...</summary>
+    /// <summary>packed VUYA 4:4:4:4, 32bpp (1 Cr &amp; Cb sample per 1x1 Y &amp; A samples), VUYAVUYA...</summary>
     @AV_PIX_FMT_VUYA = 205,
     /// <summary>IEEE-754 half precision packed RGBA 16:16:16:16, 64bpp, RGBARGBA..., big-endian</summary>
     @AV_PIX_FMT_RGBAF16BE = 206,
     /// <summary>IEEE-754 half precision packed RGBA 16:16:16:16, 64bpp, RGBARGBA..., little-endian</summary>
     @AV_PIX_FMT_RGBAF16LE = 207,
-    /// <summary>packed VUYX 4:4:4, 32bpp, Variant of VUYA where alpha channel is left undefined</summary>
+    /// <summary>packed VUYX 4:4:4:4, 32bpp, Variant of VUYA where alpha channel is left undefined</summary>
     @AV_PIX_FMT_VUYX = 208,
     /// <summary>like NV12, with 12bpp per component, data in the high bits, zeros in the low bits, little-endian</summary>
     @AV_PIX_FMT_P012LE = 209,
@@ -1727,8 +1773,85 @@ public enum AVPixelFormat : int
     @AV_PIX_FMT_GBRAP14LE = 226,
     /// <summary>Hardware surfaces for Direct3D 12.</summary>
     @AV_PIX_FMT_D3D12 = 227,
+    /// <summary>packed AYUV 4:4:4:4, 32bpp (1 Cr &amp; Cb sample per 1x1 Y &amp; A samples), AYUVAYUV...</summary>
+    @AV_PIX_FMT_AYUV = 228,
+    /// <summary>packed UYVA 4:4:4:4, 32bpp (1 Cr &amp; Cb sample per 1x1 Y &amp; A samples), UYVAUYVA...</summary>
+    @AV_PIX_FMT_UYVA = 229,
+    /// <summary>packed VYU 4:4:4, 24bpp (1 Cr &amp; Cb sample per 1x1 Y), VYUVYU...</summary>
+    @AV_PIX_FMT_VYU444 = 230,
+    /// <summary>packed VYUX 4:4:4 like XV30, 32bpp, (msb)10V 10Y 10U 2X(lsb), big-endian</summary>
+    @AV_PIX_FMT_V30XBE = 231,
+    /// <summary>packed VYUX 4:4:4 like XV30, 32bpp, (msb)10V 10Y 10U 2X(lsb), little-endian</summary>
+    @AV_PIX_FMT_V30XLE = 232,
+    /// <summary>IEEE-754 half precision packed RGB 16:16:16, 48bpp, RGBRGB..., big-endian</summary>
+    @AV_PIX_FMT_RGBF16BE = 233,
+    /// <summary>IEEE-754 half precision packed RGB 16:16:16, 48bpp, RGBRGB..., little-endian</summary>
+    @AV_PIX_FMT_RGBF16LE = 234,
+    /// <summary>packed RGBA 32:32:32:32, 128bpp, RGBARGBA..., big-endian</summary>
+    @AV_PIX_FMT_RGBA128BE = 235,
+    /// <summary>packed RGBA 32:32:32:32, 128bpp, RGBARGBA..., little-endian</summary>
+    @AV_PIX_FMT_RGBA128LE = 236,
+    /// <summary>packed RGBA 32:32:32, 96bpp, RGBRGB..., big-endian</summary>
+    @AV_PIX_FMT_RGB96BE = 237,
+    /// <summary>packed RGBA 32:32:32, 96bpp, RGBRGB..., little-endian</summary>
+    @AV_PIX_FMT_RGB96LE = 238,
+    /// <summary>packed YUV 4:2:2 like YUYV422, 32bpp, big-endian</summary>
+    @AV_PIX_FMT_Y216BE = 239,
+    /// <summary>packed YUV 4:2:2 like YUYV422, 32bpp, little-endian</summary>
+    @AV_PIX_FMT_Y216LE = 240,
+    /// <summary>packed XVYU 4:4:4, 64bpp, big-endian, variant of Y416 where alpha channel is left undefined</summary>
+    @AV_PIX_FMT_XV48BE = 241,
+    /// <summary>packed XVYU 4:4:4, 64bpp, little-endian, variant of Y416 where alpha channel is left undefined</summary>
+    @AV_PIX_FMT_XV48LE = 242,
+    /// <summary>IEEE-754 half precision planer GBR 4:4:4, 48bpp, big-endian</summary>
+    @AV_PIX_FMT_GBRPF16BE = 243,
+    /// <summary>IEEE-754 half precision planer GBR 4:4:4, 48bpp, little-endian</summary>
+    @AV_PIX_FMT_GBRPF16LE = 244,
+    /// <summary>IEEE-754 half precision planar GBRA 4:4:4:4, 64bpp, big-endian</summary>
+    @AV_PIX_FMT_GBRAPF16BE = 245,
+    /// <summary>IEEE-754 half precision planar GBRA 4:4:4:4, 64bpp, little-endian</summary>
+    @AV_PIX_FMT_GBRAPF16LE = 246,
+    /// <summary>IEEE-754 half precision Y, 16bpp, big-endian</summary>
+    @AV_PIX_FMT_GRAYF16BE = 247,
+    /// <summary>IEEE-754 half precision Y, 16bpp, little-endian</summary>
+    @AV_PIX_FMT_GRAYF16LE = 248,
+    /// <summary>HW acceleration through AMF. data[0] contain AMFSurface pointer</summary>
+    @AV_PIX_FMT_AMF_SURFACE = 249,
+    /// <summary>Y , 32bpp, big-endian</summary>
+    @AV_PIX_FMT_GRAY32BE = 250,
+    /// <summary>Y , 32bpp, little-endian</summary>
+    @AV_PIX_FMT_GRAY32LE = 251,
+    /// <summary>IEEE-754 single precision packed YA, 32 bits gray, 32 bits alpha, 64bpp, big-endian</summary>
+    @AV_PIX_FMT_YAF32BE = 252,
+    /// <summary>IEEE-754 single precision packed YA, 32 bits gray, 32 bits alpha, 64bpp, little-endian</summary>
+    @AV_PIX_FMT_YAF32LE = 253,
+    /// <summary>IEEE-754 half precision packed YA, 16 bits gray, 16 bits alpha, 32bpp, big-endian</summary>
+    @AV_PIX_FMT_YAF16BE = 254,
+    /// <summary>IEEE-754 half precision packed YA, 16 bits gray, 16 bits alpha, 32bpp, little-endian</summary>
+    @AV_PIX_FMT_YAF16LE = 255,
+    /// <summary>planar GBRA 4:4:4:4 128bpp, big-endian</summary>
+    @AV_PIX_FMT_GBRAP32BE = 256,
+    /// <summary>planar GBRA 4:4:4:4 128bpp, little-endian</summary>
+    @AV_PIX_FMT_GBRAP32LE = 257,
+    /// <summary>planar YUV 4:4:4, 30bpp, (1 Cr &amp; Cb sample per 1x1 Y samples), lowest bits zero, big-endian</summary>
+    @AV_PIX_FMT_YUV444P10MSBBE = 258,
+    /// <summary>planar YUV 4:4:4, 30bpp, (1 Cr &amp; Cb sample per 1x1 Y samples), lowest bits zero, little-endian</summary>
+    @AV_PIX_FMT_YUV444P10MSBLE = 259,
+    /// <summary>planar YUV 4:4:4, 30bpp, (1 Cr &amp; Cb sample per 1x1 Y samples), lowest bits zero, big-endian</summary>
+    @AV_PIX_FMT_YUV444P12MSBBE = 260,
+    /// <summary>planar YUV 4:4:4, 30bpp, (1 Cr &amp; Cb sample per 1x1 Y samples), lowest bits zero, little-endian</summary>
+    @AV_PIX_FMT_YUV444P12MSBLE = 261,
+    /// <summary>planar GBR 4:4:4 30bpp, lowest bits zero, big-endian</summary>
+    @AV_PIX_FMT_GBRP10MSBBE = 262,
+    /// <summary>planar GBR 4:4:4 30bpp, lowest bits zero, little-endian</summary>
+    @AV_PIX_FMT_GBRP10MSBLE = 263,
+    /// <summary>planar GBR 4:4:4 36bpp, lowest bits zero, big-endian</summary>
+    @AV_PIX_FMT_GBRP12MSBBE = 264,
+    /// <summary>planar GBR 4:4:4 36bpp, lowest bits zero, little-endian</summary>
+    @AV_PIX_FMT_GBRP12MSBLE = 265,
+    @AV_PIX_FMT_OHCODEC = 266,
     /// <summary>number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions</summary>
-    @AV_PIX_FMT_NB = 228,
+    @AV_PIX_FMT_NB = 267,
 }
 
 /// <summary>Rounding methods.</summary>
@@ -1792,6 +1915,12 @@ public enum AVSideDataProps : int
     @AV_SIDE_DATA_PROP_GLOBAL = 1,
     /// <summary>Multiple instances of this side data type can be meaningfully present in a single side data array.</summary>
     @AV_SIDE_DATA_PROP_MULTI = 2,
+    /// <summary>Side data depends on the video dimensions. Side data with this property loses its meaning when rescaling or cropping the image, unless either recomputed or adjusted to the new resolution.</summary>
+    @AV_SIDE_DATA_PROP_SIZE_DEPENDENT = 4,
+    /// <summary>Side data depends on the video color space. Side data with this property loses its meaning when changing the video color encoding, e.g. by adapting to a different set of primaries or transfer characteristics.</summary>
+    @AV_SIDE_DATA_PROP_COLOR_DEPENDENT = 8,
+    /// <summary>Side data depends on the channel layout. Side data with this property loses its meaning when downmixing or upmixing, unless either recomputed or adjusted to the new layout.</summary>
+    @AV_SIDE_DATA_PROP_CHANNEL_DEPENDENT = 16,
 }
 
 public enum AVStreamGroupParamsType : int
@@ -1889,5 +2018,81 @@ public enum SwrFilterType : int
     @SWR_FILTER_TYPE_BLACKMAN_NUTTALL = 1,
     /// <summary>Kaiser windowed sinc</summary>
     @SWR_FILTER_TYPE_KAISER = 2,
+}
+
+public enum SwsAlphaBlend : int
+{
+    @SWS_ALPHA_BLEND_NONE = 0,
+    @SWS_ALPHA_BLEND_UNIFORM = 1,
+    @SWS_ALPHA_BLEND_CHECKERBOARD = 2,
+    @SWS_ALPHA_BLEND_NB = 3,
+}
+
+/// <summary>**************************** Flags and quality settings * ****************************</summary>
+public enum SwsDither : int
+{
+    @SWS_DITHER_NONE = 0,
+    @SWS_DITHER_AUTO = 1,
+    @SWS_DITHER_BAYER = 2,
+    @SWS_DITHER_ED = 3,
+    @SWS_DITHER_A_DITHER = 4,
+    @SWS_DITHER_X_DITHER = 5,
+    @SWS_DITHER_NB = 6,
+}
+
+public enum SwsFlags : int
+{
+    /// <summary>fast bilinear filtering</summary>
+    @SWS_FAST_BILINEAR = 1,
+    /// <summary>bilinear filtering</summary>
+    @SWS_BILINEAR = 2,
+    /// <summary>2-tap cubic B-spline</summary>
+    @SWS_BICUBIC = 4,
+    /// <summary>experimental</summary>
+    @SWS_X = 8,
+    /// <summary>nearest neighbor</summary>
+    @SWS_POINT = 16,
+    /// <summary>area averaging</summary>
+    @SWS_AREA = 32,
+    /// <summary>bicubic luma, bilinear chroma</summary>
+    @SWS_BICUBLIN = 64,
+    /// <summary>gaussian approximation</summary>
+    @SWS_GAUSS = 128,
+    /// <summary>unwindowed sinc</summary>
+    @SWS_SINC = 256,
+    /// <summary>3-tap sinc/sinc</summary>
+    @SWS_LANCZOS = 512,
+    /// <summary>cubic Keys spline</summary>
+    @SWS_SPLINE = 1024,
+    /// <summary>Return an error on underspecified conversions. Without this flag, unspecified fields are defaulted to sensible values.</summary>
+    @SWS_STRICT = 2048,
+    /// <summary>Emit verbose log of scaling parameters.</summary>
+    @SWS_PRINT_INFO = 4096,
+    /// <summary>Perform full chroma upsampling when upscaling to RGB.</summary>
+    @SWS_FULL_CHR_H_INT = 8192,
+    /// <summary>Perform full chroma interpolation when downscaling RGB sources.</summary>
+    @SWS_FULL_CHR_H_INP = 16384,
+    /// <summary>Force bit-exact output. This will prevent the use of platform-specific optimizations that may lead to slight difference in rounding, in favor of always maintaining exact bit output compatibility with the reference C code.</summary>
+    @SWS_ACCURATE_RND = 262144,
+    /// <summary>Force bit-exact output. This will prevent the use of platform-specific optimizations that may lead to slight difference in rounding, in favor of always maintaining exact bit output compatibility with the reference C code.</summary>
+    @SWS_BITEXACT = 524288,
+    /// <summary>This flag has no effect</summary>
+    @SWS_DIRECT_BGR = 32768,
+    /// <summary>Set `SwsContext.dither` instead</summary>
+    @SWS_ERROR_DIFFUSION = 8388608,
+}
+
+public enum SwsIntent : int
+{
+    /// <summary>Perceptual tone mapping</summary>
+    @SWS_INTENT_PERCEPTUAL = 0,
+    /// <summary>Relative colorimetric clipping</summary>
+    @SWS_INTENT_RELATIVE_COLORIMETRIC = 1,
+    /// <summary>Saturation mapping</summary>
+    @SWS_INTENT_SATURATION = 2,
+    /// <summary>Absolute colorimetric clipping</summary>
+    @SWS_INTENT_ABSOLUTE_COLORIMETRIC = 3,
+    /// <summary>not part of the ABI</summary>
+    @SWS_INTENT_NB = 4,
 }
 

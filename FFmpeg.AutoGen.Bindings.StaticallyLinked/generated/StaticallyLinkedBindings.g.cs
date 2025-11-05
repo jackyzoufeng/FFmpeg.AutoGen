@@ -377,6 +377,9 @@ public static unsafe partial class StaticallyLinkedBindings
     public static extern int av_buffersink_get_samples(AVFilterContext* @ctx, AVFrame* @frame, int @nb_samples);
     
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern AVFrameSideData** av_buffersink_get_side_data(AVFilterContext* @ctx, int* @nb_side_data);
+    
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVRational av_buffersink_get_time_base(AVFilterContext* @ctx);
     
     /// <summary>Get the properties of the stream @{</summary>
@@ -757,6 +760,11 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int av_compare_ts(long @ts_a, AVRational @tb_a, long @ts_b, AVRational @tb_b);
     
+    /// <summary>Allocate an AVContainerFifo instance for AVPacket.</summary>
+    /// <param name="flags">currently unused</param>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern AVContainerFifo* av_container_fifo_alloc_avpacket(uint @flags);
+    
     /// <summary>Allocate an AVContentLightMetadata structure and set its fields to default values. The resulting struct can be freed using av_freep().</summary>
     /// <returns>An AVContentLightMetadata filled with default values or NULL on failure.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
@@ -849,7 +857,7 @@ public static unsafe partial class StaticallyLinkedBindings
     
     /// <summary>Get dictionary entries as a string.</summary>
     /// <param name="m">The dictionary</param>
-    /// <param name="buffer">Pointer to buffer that will be allocated with string containg entries. Buffer must be freed by the caller when is no longer needed.</param>
+    /// <param name="buffer">Pointer to buffer that will be allocated with string containing entries. Buffer must be freed by the caller when is no longer needed.</param>
     /// <param name="key_val_sep">Character used to separate key from value</param>
     /// <param name="pairs_sep">Character used to separate two pairs from each other</param>
     /// <returns>&gt;= 0 on success, negative on error</returns>
@@ -1140,19 +1148,9 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVProgram* av_find_program_from_stream(AVFormatContext* @ic, AVProgram* @last, int @s);
     
-    /// <summary>Returns the method used to set ctx-&gt;duration.</summary>
-    /// <returns>AVFMT_DURATION_FROM_PTS, AVFMT_DURATION_FROM_STREAM, or AVFMT_DURATION_FROM_BITRATE.</returns>
-    [Obsolete("duration_estimation_method is public and can be read directly.")]
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern AVDurationEstimationMethod av_fmt_ctx_get_duration_estimation_method(AVFormatContext* @ctx);
-    
     /// <summary>Disables cpu detection and forces the specified flags. -1 is a special case that disables forcing of specific flags.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern void av_force_cpu_flags(int @flags);
-    
-    /// <summary>This function will cause global side data to be injected in the next packet of each stream as well as after any subsequent seek.</summary>
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void av_format_inject_global_side_data(AVFormatContext* @s);
     
     /// <summary>Fill the provided buffer with a string containing a FourCC (four-character code) representation.</summary>
     /// <param name="buf">a buffer with size in bytes of at least AV_FOURCC_MAX_STRING_SIZE</param>
@@ -1194,7 +1192,7 @@ public static unsafe partial class StaticallyLinkedBindings
     
     /// <summary>Allocate new buffer(s) for audio or video data.</summary>
     /// <param name="frame">frame in which to store the new buffers.</param>
-    /// <param name="align">Required buffer size alignment. If equal to 0, alignment will be chosen automatically for the current CPU. It is highly recommended to pass 0 here unless you know what you are doing.</param>
+    /// <param name="align">Required buffer size and data pointer alignment. If equal to 0, alignment will be chosen automatically for the current CPU. It is highly recommended to pass 0 here unless you know what you are doing.</param>
     /// <returns>0 on success, a negative AVERROR on error.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int av_frame_get_buffer(AVFrame* @frame, int @align);
@@ -1312,6 +1310,10 @@ public static unsafe partial class StaticallyLinkedBindings
     /// <summary>Remove and free all side data instances of the given type from an array.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern void av_frame_side_data_remove(AVFrameSideData*** @sd, int* @nb_sd, AVFrameSideDataType @type);
+    
+    /// <summary>Remove and free all side data instances that match any of the given side data properties. (See enum AVSideDataProps)</summary>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void av_frame_side_data_remove_by_props(AVFrameSideData*** @sd, int* @nb_sd, int @props);
     
     /// <summary>Unreference all the buffers referenced by frame and reset the frame fields.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
@@ -1947,6 +1949,7 @@ public static unsafe partial class StaticallyLinkedBindings
     /// <param name="list">pointer to the list</param>
     /// <param name="term">list terminator (usually 0 or -1)</param>
     /// <returns>length of the list, in elements, not counting the terminator</returns>
+    [Obsolete()]
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint av_int_list_length_for_size(uint @elsize, void* @list, ulong @term);
     
@@ -2026,8 +2029,8 @@ public static unsafe partial class StaticallyLinkedBindings
     
     /// <summary>Send the specified message to the log once with the initial_level and then with the subsequent_level. By default, all logging messages are sent to stderr. This behavior can be altered by setting a different logging callback function.</summary>
     /// <param name="avcl">A pointer to an arbitrary struct of which the first field is a pointer to an AVClass struct or NULL if general log.</param>
-    /// <param name="initial_level">importance level of the message expressed using a &quot;Logging Constant&quot; for the first occurance.</param>
-    /// <param name="subsequent_level">importance level of the message expressed using a &quot;Logging Constant&quot; after the first occurance.</param>
+    /// <param name="initial_level">importance level of the message expressed using a &quot;Logging Constant&quot; for the first occurrence.</param>
+    /// <param name="subsequent_level">importance level of the message expressed using a &quot;Logging Constant&quot; after the first occurrence.</param>
     /// <param name="state">a variable to keep trak of if a message has already been printed this must be initialized to 0 before the first use. The same state must not be accessed by 2 Threads simultaneously.</param>
     /// <param name="fmt">The format string (printf-compatible) that specifies how subsequent arguments are converted to output.</param>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
@@ -2494,6 +2497,7 @@ public static unsafe partial class StaticallyLinkedBindings
     public static extern AVOption* av_opt_next(void* @obj, AVOption* @prev);
     
     /// <summary>Gets a pointer to the requested field in a struct. This function allows accessing a struct even when its fields are moved or renamed since the application making the access has been compiled,</summary>
+    [Obsolete("direct access to AVOption-exported fields is not supported")]
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern void* av_opt_ptr(AVClass* @avclass, void* @obj,     
     #if NETSTANDARD2_1_OR_GREATER
@@ -2505,7 +2509,7 @@ public static unsafe partial class StaticallyLinkedBindings
     
     /// <summary>Get a list of allowed ranges for the given option.</summary>
     /// <param name="flags">is a bitmask of flags, undefined flags should not be set and should be ignored AV_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance AV_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component,</param>
-    /// <returns>number of compontents returned on success, a negative errro code otherwise</returns>
+    /// <returns>number of components returned on success, a negative error code otherwise</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int av_opt_query_ranges(AVOptionRanges** @p0, void* @obj,     
     #if NETSTANDARD2_1_OR_GREATER
@@ -2517,7 +2521,7 @@ public static unsafe partial class StaticallyLinkedBindings
     
     /// <summary>Get a default list of allowed ranges for the given option.</summary>
     /// <param name="flags">is a bitmask of flags, undefined flags should not be set and should be ignored AV_OPT_SEARCH_FAKE_OBJ indicates that the obj is a double pointer to a AVClass instead of a full instance AV_OPT_MULTI_COMPONENT_RANGE indicates that function may return more than one component,</param>
-    /// <returns>number of compontents returned on success, a negative errro code otherwise</returns>
+    /// <returns>number of components returned on success, a negative error code otherwise</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int av_opt_query_ranges_default(AVOptionRanges** @p0, void* @obj,     
     #if NETSTANDARD2_1_OR_GREATER
@@ -2531,7 +2535,7 @@ public static unsafe partial class StaticallyLinkedBindings
     /// <param name="obj">AVClass object to serialize</param>
     /// <param name="opt_flags">serialize options with all the specified flags set (AV_OPT_FLAG)</param>
     /// <param name="flags">combination of AV_OPT_SERIALIZE_* flags</param>
-    /// <param name="buffer">Pointer to buffer that will be allocated with string containg serialized options. Buffer must be freed by the caller when is no longer needed.</param>
+    /// <param name="buffer">Pointer to buffer that will be allocated with string containing serialized options. Buffer must be freed by the caller when is no longer needed.</param>
     /// <param name="key_val_sep">character used to separate key from value</param>
     /// <param name="pairs_sep">character used to separate two pairs from each other</param>
     /// <returns>&gt;= 0 on success, negative on error</returns>
@@ -3273,16 +3277,6 @@ public static unsafe partial class StaticallyLinkedBindings
     #endif
     string @s);
     
-    /// <summary>Wrap an existing array as stream side data.</summary>
-    /// <param name="st">stream</param>
-    /// <param name="type">side information type</param>
-    /// <param name="data">the side data array. It must be allocated with the av_malloc() family of functions. The ownership of the data is transferred to st.</param>
-    /// <param name="size">side information size</param>
-    /// <returns>zero on success, a negative AVERROR code on failure. On failure, the stream is unchanged and the data remains owned by the caller.</returns>
-    [Obsolete("use av_packet_side_data_add() with the stream's  \"codecpar side data\"")]
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int av_stream_add_side_data(AVStream* @st, AVPacketSideDataType @type, byte* @data, ulong @size);
-    
     /// <summary>Get the AVClass for AVStream. It can be used in combination with AV_OPT_SEARCH_FAKE_OBJ for examining options.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVClass* av_stream_get_class();
@@ -3294,27 +3288,9 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVCodecParserContext* av_stream_get_parser(AVStream* @s);
     
-    /// <summary>Get side information from stream.</summary>
-    /// <param name="stream">stream</param>
-    /// <param name="type">desired side information type</param>
-    /// <param name="size">If supplied, *size will be set to the size of the side data or to zero if the desired side data is not present.</param>
-    /// <returns>pointer to data if present or NULL otherwise</returns>
-    [Obsolete("use av_packet_side_data_get() with the stream's  \"codecpar side data\"")]
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern byte* av_stream_get_side_data(AVStream* @stream, AVPacketSideDataType @type, ulong* @size);
-    
     /// <summary>Get the AVClass for AVStreamGroup. It can be used in combination with AV_OPT_SEARCH_FAKE_OBJ for examining options.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVClass* av_stream_group_get_class();
-    
-    /// <summary>Allocate new information from stream.</summary>
-    /// <param name="stream">stream</param>
-    /// <param name="type">desired side information type</param>
-    /// <param name="size">side information size</param>
-    /// <returns>pointer to fresh allocated data or NULL otherwise</returns>
-    [Obsolete("use av_packet_side_data_new() with the stream's  \"codecpar side data\"")]
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern byte* av_stream_new_side_data(AVStream* @stream, AVPacketSideDataType @type, ulong @size);
     
     /// <summary>Put a description of the AVERROR code errnum in errbuf. In case of failure the global variable errno is set to indicate the error. Even in case of failure av_strerror() will print a generic error message indicating the errnum provided to errbuf.</summary>
     /// <param name="errnum">error code to describe</param>
@@ -3577,11 +3553,6 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVCodecContext* avcodec_alloc_context3(AVCodec* @codec);
     
-    /// <summary>Close a given AVCodecContext and free all the data associated with it (but not the AVCodecContext itself).</summary>
-    [Obsolete("Do not use this function. Use avcodec_free_context() to destroy a codec context (either open or closed). Opening and closing a codec context multiple times is not supported anymore -- use multiple codec contexts instead.")]
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int avcodec_close(AVCodecContext* @avctx);
-    
     /// <summary>Return the libavcodec build-time configuration.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
@@ -3743,8 +3714,8 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVMediaType avcodec_get_type(AVCodecID @codec_id);
     
-    /// <summary>Returns a positive value if s is open (i.e. avcodec_open2() was called on it with no corresponding avcodec_close()), 0 otherwise.</summary>
-    /// <returns>a positive value if s is open (i.e. avcodec_open2() was called on it with no corresponding avcodec_close()), 0 otherwise.</returns>
+    /// <summary>Returns a positive value if s is open (i.e. avcodec_open2() was called on it), 0 otherwise.</summary>
+    /// <returns>a positive value if s is open (i.e. avcodec_open2() was called on it), 0 otherwise.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int avcodec_is_open(AVCodecContext* @s);
     
@@ -3900,10 +3871,6 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint avdevice_version();
     
-    [Obsolete("this function should never be called by users")]
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int avfilter_config_links(AVFilterContext* @filter);
-    
     /// <summary>Return the libavfilter build-time configuration.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
@@ -3961,7 +3928,7 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int avfilter_graph_config(AVFilterGraph* @graphctx, void* @log_ctx);
     
-    /// <summary>Create and add a filter instance into an existing graph. The filter instance is created from the filter filt and inited with the parameter args. opaque is currently ignored.</summary>
+    /// <summary>A convenience wrapper that allocates and initializes a filter in a single step. The filter instance is created from the filter filt and inited with the parameter args. opaque is currently ignored.</summary>
     /// <param name="name">the instance name to give to the created filter instance</param>
     /// <param name="graph_ctx">the filter graph</param>
     /// <returns>a negative AVERROR error code in case of failure, a non negative value otherwise</returns>
@@ -4224,9 +4191,11 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int avfilter_link(AVFilterContext* @src, uint @srcpad, AVFilterContext* @dst, uint @dstpad);
     
-    [Obsolete("this function should never be called by users")]
+    /// <summary>Get the hardware frames context of a filter link.</summary>
+    /// <param name="link">an AVFilterLink</param>
+    /// <returns>a ref-counted copy of the link&apos;s hw_frames_ctx field if there is a hardware frames context associated with the link or NULL otherwise. The returned AVBufferRef needs to be released with av_buffer_unref() when it is no longer used.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void avfilter_link_free(AVFilterLink** @link);
+    public static extern AVBufferRef* avfilter_link_get_hw_frames_ctx(AVFilterLink* @link);
     
     /// <summary>Get the name of an AVFilterPad.</summary>
     /// <param name="pads">an array of AVFilterPads</param>
@@ -4398,11 +4367,11 @@ public static unsafe partial class StaticallyLinkedBindings
     public static extern AVStream* avformat_new_stream(AVFormatContext* @s, AVCodec* @c);
     
     /// <summary>Open an input stream and read the header. The codecs are not opened. The stream must be closed with avformat_close_input().</summary>
-    /// <param name="ps">Pointer to user-supplied AVFormatContext (allocated by avformat_alloc_context). May be a pointer to NULL, in which case an AVFormatContext is allocated by this function and written into ps. Note that a user-supplied AVFormatContext will be freed on failure.</param>
+    /// <param name="ps">Pointer to user-supplied AVFormatContext (allocated by avformat_alloc_context). May be a pointer to NULL, in which case an AVFormatContext is allocated by this function and written into ps. Note that a user-supplied AVFormatContext will be freed on failure and its pointer set to NULL.</param>
     /// <param name="url">URL of the stream to open.</param>
     /// <param name="fmt">If non-NULL, this parameter forces a specific input format. Otherwise the format is autodetected.</param>
     /// <param name="options">A dictionary filled with AVFormatContext and demuxer-private options. On return this parameter will be destroyed and replaced with a dict containing options that were not found. May be NULL.</param>
-    /// <returns>0 on success, a negative AVERROR on failure.</returns>
+    /// <returns>0 on success; on failure: frees ps, sets its pointer to NULL, and returns a negative AVERROR.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int avformat_open_input(AVFormatContext** @ps,     
     #if NETSTANDARD2_1_OR_GREATER
@@ -4843,44 +4812,6 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint avutil_version();
     
-    /// <summary>Return the libpostproc build-time configuration.</summary>
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
-    public static extern string postproc_configuration();
-    
-    /// <summary>Return the libpostproc license.</summary>
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
-    public static extern string postproc_license();
-    
-    /// <summary>Return the LIBPOSTPROC_VERSION_INT constant.</summary>
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern uint postproc_version();
-    
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void pp_free_context(void* @ppContext);
-    
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void pp_free_mode(void* @mode);
-    
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* pp_get_context(int @width, int @height, int @flags);
-    
-    /// <summary>Return a pp_mode or NULL if an error occurred.</summary>
-    /// <param name="name">the string after &quot;-pp&quot; on the command line</param>
-    /// <param name="quality">a number from 0 to PP_QUALITY_MAX</param>
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void* pp_get_mode_by_name_and_quality(    
-    #if NETSTANDARD2_1_OR_GREATER
-    [MarshalAs(UnmanagedType.LPUTF8Str)]
-    #else
-    [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-    #endif
-    string @name, int @quality);
-    
-    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void pp_postprocess(in byte_ptr3 @src, in int3 @srcStride, ref byte_ptr3 @dst, in int3 @dstStride, int @horizontalSize, int @verticalSize, sbyte* @QP_store, int @QP_stride, void* @mode, void* @ppContext, int @pict_type);
-    
     /// <summary>Allocate SwrContext.</summary>
     /// <returns>NULL on error, allocated context otherwise</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
@@ -5035,7 +4966,7 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint swresample_version();
     
-    /// <summary>Allocate an empty SwsContext. This must be filled and passed to sws_init_context(). For filling see AVOptions, options.c and sws_setColorspaceDetails().</summary>
+    /// <summary>Allocate an empty SwsContext and set its fields to default values.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern SwsContext* sws_alloc_context();
     
@@ -5064,13 +4995,25 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern void sws_frame_end(SwsContext* @c);
     
-    /// <summary>Initialize the scaling process for a given pair of source/destination frames. Must be called before any calls to sws_send_slice() and sws_receive_slice().</summary>
+    /// <summary>Like `sws_scale_frame`, but without actually scaling. It will instead merely initialize internal state that *would* be required to perform the operation, as well as returning the correct error code for unsupported frame combinations.</summary>
+    /// <param name="ctx">The scaling context.</param>
+    /// <param name="dst">The destination frame to consider.</param>
+    /// <param name="src">The source frame to consider.</param>
+    /// <returns>0 on success, a negative AVERROR code on failure.</returns>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_frame_setup(SwsContext* @ctx, AVFrame* @dst, AVFrame* @src);
+    
+    /// <summary>Initialize the scaling process for a given pair of source/destination frames. Must be called before any calls to sws_send_slice() and sws_receive_slice(). Requires a context that has been previously been initialized with sws_init_context().</summary>
     /// <param name="c">The scaling context</param>
     /// <param name="dst">The destination frame.</param>
     /// <param name="src">The source frame. The data buffers must be allocated, but the frame data does not have to be ready at this point. Data availability is then signalled by sws_send_slice().</param>
     /// <returns>0 on success, a negative AVERROR code on failure</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int sws_frame_start(SwsContext* @c, AVFrame* @dst, AVFrame* @src);
+    
+    /// <summary>Free the context and everything associated with it, and write NULL to the provided pointer.</summary>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void sws_free_context(SwsContext** @ctx);
     
     /// <summary>Free the swscaler context swsContext. If swsContext is NULL, then does nothing.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
@@ -5082,7 +5025,7 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern void sws_freeVec(SwsVector* @a);
     
-    /// <summary>Get the AVClass for swsContext. It can be used in combination with AV_OPT_SEARCH_FAKE_OBJ for examining options.</summary>
+    /// <summary>Get the AVClass for SwsContext. It can be used in combination with AV_OPT_SEARCH_FAKE_OBJ for examining options.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern AVClass* sws_get_class();
     
@@ -5125,6 +5068,10 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int sws_init_context(SwsContext* @sws_context, SwsFilter* @srcFilter, SwsFilter* @dstFilter);
     
+    /// <summary>Check if a given conversion is a noop. Returns a positive integer if no operation needs to be performed, 0 otherwise.</summary>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_is_noop(AVFrame* @dst, AVFrame* @src);
+    
     /// <summary>Returns a positive value if an endianness conversion for pix_fmt is supported, 0 otherwise.</summary>
     /// <param name="pix_fmt">the pixel format</param>
     /// <returns>a positive value if an endianness conversion for pix_fmt is supported, 0 otherwise.</returns>
@@ -5151,13 +5098,13 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int sws_receive_slice(SwsContext* @c, uint @slice_start, uint @slice_height);
     
-    /// <summary>Get the alignment required for slices</summary>
+    /// <summary>Get the alignment required for slices. Requires a context that has been previously been initialized with sws_init_context().</summary>
     /// <param name="c">The scaling context</param>
     /// <returns>alignment required for output slices requested with sws_receive_slice(). Slice offsets and sizes passed to sws_receive_slice() must be multiples of the value returned from this function.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern uint sws_receive_slice_alignment(SwsContext* @c);
     
-    /// <summary>Scale the image slice in srcSlice and put the resulting scaled slice in the image in dst. A slice is a sequence of consecutive rows in an image.</summary>
+    /// <summary>Scale the image slice in srcSlice and put the resulting scaled slice in the image in dst. A slice is a sequence of consecutive rows in an image. Requires a context that has been previously been initialized with sws_init_context().</summary>
     /// <param name="c">the scaling context previously created with sws_getContext()</param>
     /// <param name="srcSlice">the array containing the pointers to the planes of the source slice</param>
     /// <param name="srcStride">the array containing the strides for each plane of the source image</param>
@@ -5169,11 +5116,10 @@ public static unsafe partial class StaticallyLinkedBindings
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int sws_scale(SwsContext* @c, byte*[] @srcSlice, int[] @srcStride, int @srcSliceY, int @srcSliceH, byte*[] @dst, int[] @dstStride);
     
-    /// <summary>Scale source data from src and write the output to dst.</summary>
-    /// <param name="c">The scaling context</param>
-    /// <param name="dst">The destination frame. See documentation for sws_frame_start() for more details.</param>
-    /// <param name="src">The source frame.</param>
-    /// <returns>0 on success, a negative AVERROR code on failure</returns>
+    /// <summary>Scale source data from `src` and write the output to `dst`.</summary>
+    /// <param name="dst">The destination frame. The data buffers may either be already allocated by the caller or left clear, in which case they will be allocated by the scaler. The latter may have performance advantages - e.g. in certain cases some (or all) output planes may be references to input planes, rather than copies.</param>
+    /// <param name="src">The source frame. If the data buffers are set to NULL, then this function behaves identically to `sws_frame_setup`.</param>
+    /// <returns>&gt;= 0 on success, a negative AVERROR code on failure.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int sws_scale_frame(SwsContext* @c, AVFrame* @dst, AVFrame* @src);
     
@@ -5201,6 +5147,38 @@ public static unsafe partial class StaticallyLinkedBindings
     /// <returns>A negative error code on error, non negative otherwise. If `LIBSWSCALE_VERSION_MAJOR &lt; 7`, returns -1 if not supported.</returns>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
     public static extern int sws_setColorspaceDetails(SwsContext* @c, in int4 @inv_table, int @srcRange, in int4 @table, int @dstRange, int @brightness, int @contrast, int @saturation);
+    
+    /// <summary>Test if a given color space is supported.</summary>
+    /// <param name="colorspace">The colorspace to check.</param>
+    /// <param name="output">If 0, test if compatible with the source/input frame; otherwise, with the destination/output frame.</param>
+    /// <returns>A positive integer if supported, 0 otherwise.</returns>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_test_colorspace(AVColorSpace @colorspace, int @output);
+    
+    /// <summary>Test if a given pixel format is supported.</summary>
+    /// <param name="format">The format to check.</param>
+    /// <param name="output">If 0, test if compatible with the source/input frame; otherwise, with the destination/output frame.</param>
+    /// <returns>A positive integer if supported, 0 otherwise.</returns>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_test_format(AVPixelFormat @format, int @output);
+    
+    /// <summary>Helper function to run all sws_test_* against a frame, as well as testing the basic frame properties for sanity. Ignores irrelevant properties - for example, AVColorSpace is not checked for RGB frames.</summary>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_test_frame(AVFrame* @frame, int @output);
+    
+    /// <summary>Test if a given set of color primaries is supported.</summary>
+    /// <param name="primaries">The color primaries to check.</param>
+    /// <param name="output">If 0, test if compatible with the source/input frame; otherwise, with the destination/output frame.</param>
+    /// <returns>A positive integer if supported, 0 otherwise.</returns>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_test_primaries(AVColorPrimaries @primaries, int @output);
+    
+    /// <summary>Test if a given color transfer function is supported.</summary>
+    /// <param name="trc">The color transfer function to check.</param>
+    /// <param name="output">If 0, test if compatible with the source/input frame; otherwise, with the destination/output frame.</param>
+    /// <returns>A positive integer if supported, 0 otherwise.</returns>
+    [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int sws_test_transfer(AVColorTransferCharacteristic @trc, int @output);
     
     /// <summary>Return the libswscale build-time configuration.</summary>
     [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
@@ -5280,6 +5258,7 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.av_buffersink_get_sample_aspect_ratio = av_buffersink_get_sample_aspect_ratio;
         vectors.av_buffersink_get_sample_rate = av_buffersink_get_sample_rate;
         vectors.av_buffersink_get_samples = av_buffersink_get_samples;
+        vectors.av_buffersink_get_side_data = av_buffersink_get_side_data;
         vectors.av_buffersink_get_time_base = av_buffersink_get_time_base;
         vectors.av_buffersink_get_type = av_buffersink_get_type;
         vectors.av_buffersink_get_w = av_buffersink_get_w;
@@ -5335,6 +5314,7 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.av_color_transfer_name = av_color_transfer_name;
         vectors.av_compare_mod = av_compare_mod;
         vectors.av_compare_ts = av_compare_ts;
+        vectors.av_container_fifo_alloc_avpacket = av_container_fifo_alloc_avpacket;
         vectors.av_content_light_metadata_alloc = av_content_light_metadata_alloc;
         vectors.av_content_light_metadata_create_side_data = av_content_light_metadata_create_side_data;
         vectors.av_cpb_properties_alloc = av_cpb_properties_alloc;
@@ -5384,9 +5364,7 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.av_find_input_format = av_find_input_format;
         vectors.av_find_nearest_q_idx = av_find_nearest_q_idx;
         vectors.av_find_program_from_stream = av_find_program_from_stream;
-        vectors.av_fmt_ctx_get_duration_estimation_method = av_fmt_ctx_get_duration_estimation_method;
         vectors.av_force_cpu_flags = av_force_cpu_flags;
-        vectors.av_format_inject_global_side_data = av_format_inject_global_side_data;
         vectors.av_fourcc_make_string = av_fourcc_make_string;
         vectors.av_frame_alloc = av_frame_alloc;
         vectors.av_frame_apply_cropping = av_frame_apply_cropping;
@@ -5413,6 +5391,7 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.av_frame_side_data_name = av_frame_side_data_name;
         vectors.av_frame_side_data_new = av_frame_side_data_new;
         vectors.av_frame_side_data_remove = av_frame_side_data_remove;
+        vectors.av_frame_side_data_remove_by_props = av_frame_side_data_remove_by_props;
         vectors.av_frame_unref = av_frame_unref;
         vectors.av_free = av_free;
         vectors.av_freep = av_freep;
@@ -5653,13 +5632,10 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.av_shrink_packet = av_shrink_packet;
         vectors.av_size_mult = av_size_mult;
         vectors.av_strdup = av_strdup;
-        vectors.av_stream_add_side_data = av_stream_add_side_data;
         vectors.av_stream_get_class = av_stream_get_class;
         vectors.av_stream_get_codec_timebase = av_stream_get_codec_timebase;
         vectors.av_stream_get_parser = av_stream_get_parser;
-        vectors.av_stream_get_side_data = av_stream_get_side_data;
         vectors.av_stream_group_get_class = av_stream_group_get_class;
-        vectors.av_stream_new_side_data = av_stream_new_side_data;
         vectors.av_strerror = av_strerror;
         vectors.av_strndup = av_strndup;
         vectors.av_sub_q = av_sub_q;
@@ -5693,7 +5669,6 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.avcodec_align_dimensions = avcodec_align_dimensions;
         vectors.avcodec_align_dimensions2 = avcodec_align_dimensions2;
         vectors.avcodec_alloc_context3 = avcodec_alloc_context3;
-        vectors.avcodec_close = avcodec_close;
         vectors.avcodec_configuration = avcodec_configuration;
         vectors.avcodec_decode_subtitle2 = avcodec_decode_subtitle2;
         vectors.avcodec_default_execute = avcodec_default_execute;
@@ -5746,7 +5721,6 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.avdevice_list_output_sinks = avdevice_list_output_sinks;
         vectors.avdevice_register_all = avdevice_register_all;
         vectors.avdevice_version = avdevice_version;
-        vectors.avfilter_config_links = avfilter_config_links;
         vectors.avfilter_configuration = avfilter_configuration;
         vectors.avfilter_filter_pad_count = avfilter_filter_pad_count;
         vectors.avfilter_free = avfilter_free;
@@ -5780,7 +5754,7 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.avfilter_insert_filter = avfilter_insert_filter;
         vectors.avfilter_license = avfilter_license;
         vectors.avfilter_link = avfilter_link;
-        vectors.avfilter_link_free = avfilter_link_free;
+        vectors.avfilter_link_get_hw_frames_ctx = avfilter_link_get_hw_frames_ctx;
         vectors.avfilter_pad_get_name = avfilter_pad_get_name;
         vectors.avfilter_pad_get_type = avfilter_pad_get_type;
         vectors.avfilter_process_command = avfilter_process_command;
@@ -5878,14 +5852,6 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.avutil_configuration = avutil_configuration;
         vectors.avutil_license = avutil_license;
         vectors.avutil_version = avutil_version;
-        vectors.postproc_configuration = postproc_configuration;
-        vectors.postproc_license = postproc_license;
-        vectors.postproc_version = postproc_version;
-        vectors.pp_free_context = pp_free_context;
-        vectors.pp_free_mode = pp_free_mode;
-        vectors.pp_get_context = pp_get_context;
-        vectors.pp_get_mode_by_name_and_quality = pp_get_mode_by_name_and_quality;
-        vectors.pp_postprocess = pp_postprocess;
         vectors.swr_alloc = swr_alloc;
         vectors.swr_alloc_set_opts2 = swr_alloc_set_opts2;
         vectors.swr_build_matrix2 = swr_build_matrix2;
@@ -5913,7 +5879,9 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.sws_convertPalette8ToPacked24 = sws_convertPalette8ToPacked24;
         vectors.sws_convertPalette8ToPacked32 = sws_convertPalette8ToPacked32;
         vectors.sws_frame_end = sws_frame_end;
+        vectors.sws_frame_setup = sws_frame_setup;
         vectors.sws_frame_start = sws_frame_start;
+        vectors.sws_free_context = sws_free_context;
         vectors.sws_freeContext = sws_freeContext;
         vectors.sws_freeFilter = sws_freeFilter;
         vectors.sws_freeVec = sws_freeVec;
@@ -5925,6 +5893,7 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.sws_getDefaultFilter = sws_getDefaultFilter;
         vectors.sws_getGaussianVec = sws_getGaussianVec;
         vectors.sws_init_context = sws_init_context;
+        vectors.sws_is_noop = sws_is_noop;
         vectors.sws_isSupportedEndiannessConversion = sws_isSupportedEndiannessConversion;
         vectors.sws_isSupportedInput = sws_isSupportedInput;
         vectors.sws_isSupportedOutput = sws_isSupportedOutput;
@@ -5936,6 +5905,11 @@ public static unsafe partial class StaticallyLinkedBindings
         vectors.sws_scaleVec = sws_scaleVec;
         vectors.sws_send_slice = sws_send_slice;
         vectors.sws_setColorspaceDetails = sws_setColorspaceDetails;
+        vectors.sws_test_colorspace = sws_test_colorspace;
+        vectors.sws_test_format = sws_test_format;
+        vectors.sws_test_frame = sws_test_frame;
+        vectors.sws_test_primaries = sws_test_primaries;
+        vectors.sws_test_transfer = sws_test_transfer;
         vectors.swscale_configuration = swscale_configuration;
         vectors.swscale_license = swscale_license;
         vectors.swscale_version = swscale_version;

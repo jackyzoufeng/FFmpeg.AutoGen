@@ -272,6 +272,10 @@ public static unsafe partial class vectors
     public static av_buffersink_get_samples_delegate av_buffersink_get_samples;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate AVFrameSideData** av_buffersink_get_side_data_delegate(AVFilterContext* @ctx, int* @nb_side_data);
+    public static av_buffersink_get_side_data_delegate av_buffersink_get_side_data;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate AVRational av_buffersink_get_time_base_delegate(AVFilterContext* @ctx);
     public static av_buffersink_get_time_base_delegate av_buffersink_get_time_base;
     
@@ -551,6 +555,10 @@ public static unsafe partial class vectors
     public static av_compare_ts_delegate av_compare_ts;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate AVContainerFifo* av_container_fifo_alloc_avpacket_delegate(uint @flags);
+    public static av_container_fifo_alloc_avpacket_delegate av_container_fifo_alloc_avpacket;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate AVContentLightMetadata* av_content_light_metadata_alloc_delegate(ulong* @size);
     public static av_content_light_metadata_alloc_delegate av_content_light_metadata_alloc;
     
@@ -821,16 +829,8 @@ public static unsafe partial class vectors
     public static av_find_program_from_stream_delegate av_find_program_from_stream;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate AVDurationEstimationMethod av_fmt_ctx_get_duration_estimation_method_delegate(AVFormatContext* @ctx);
-    public static av_fmt_ctx_get_duration_estimation_method_delegate av_fmt_ctx_get_duration_estimation_method;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void av_force_cpu_flags_delegate(int @flags);
     public static av_force_cpu_flags_delegate av_force_cpu_flags;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void av_format_inject_global_side_data_delegate(AVFormatContext* @s);
-    public static av_format_inject_global_side_data_delegate av_format_inject_global_side_data;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate byte* av_fourcc_make_string_delegate(byte* @buf, uint @fourcc);
@@ -936,6 +936,10 @@ public static unsafe partial class vectors
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void av_frame_side_data_remove_delegate(AVFrameSideData*** @sd, int* @nb_sd, AVFrameSideDataType @type);
     public static av_frame_side_data_remove_delegate av_frame_side_data_remove;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void av_frame_side_data_remove_by_props_delegate(AVFrameSideData*** @sd, int* @nb_sd, int @props);
+    public static av_frame_side_data_remove_by_props_delegate av_frame_side_data_remove_by_props;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void av_frame_unref_delegate(AVFrame* @frame);
@@ -2342,10 +2346,6 @@ public static unsafe partial class vectors
     public static av_strdup_delegate av_strdup;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate int av_stream_add_side_data_delegate(AVStream* @st, AVPacketSideDataType @type, byte* @data, ulong @size);
-    public static av_stream_add_side_data_delegate av_stream_add_side_data;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate AVClass* av_stream_get_class_delegate();
     public static av_stream_get_class_delegate av_stream_get_class;
     
@@ -2358,16 +2358,8 @@ public static unsafe partial class vectors
     public static av_stream_get_parser_delegate av_stream_get_parser;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate byte* av_stream_get_side_data_delegate(AVStream* @stream, AVPacketSideDataType @type, ulong* @size);
-    public static av_stream_get_side_data_delegate av_stream_get_side_data;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate AVClass* av_stream_group_get_class_delegate();
     public static av_stream_group_get_class_delegate av_stream_group_get_class;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate byte* av_stream_new_side_data_delegate(AVStream* @stream, AVPacketSideDataType @type, ulong @size);
-    public static av_stream_new_side_data_delegate av_stream_new_side_data;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int av_strerror_delegate(int @errnum, byte* @errbuf, ulong @errbuf_size);
@@ -2525,10 +2517,6 @@ public static unsafe partial class vectors
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate AVCodecContext* avcodec_alloc_context3_delegate(AVCodec* @codec);
     public static avcodec_alloc_context3_delegate avcodec_alloc_context3;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate int avcodec_close_delegate(AVCodecContext* @avctx);
-    public static avcodec_close_delegate avcodec_close;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
@@ -2775,10 +2763,6 @@ public static unsafe partial class vectors
     public static avdevice_version_delegate avdevice_version;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate int avfilter_config_links_delegate(AVFilterContext* @filter);
-    public static avfilter_config_links_delegate avfilter_config_links;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
     public delegate string avfilter_configuration_delegate();
     public static avfilter_configuration_delegate avfilter_configuration;
@@ -3015,8 +2999,8 @@ public static unsafe partial class vectors
     public static avfilter_link_delegate avfilter_link;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void avfilter_link_free_delegate(AVFilterLink** @link);
-    public static avfilter_link_free_delegate avfilter_link_free;
+    public delegate AVBufferRef* avfilter_link_get_hw_frames_ctx_delegate(AVFilterLink* @link);
+    public static avfilter_link_get_hw_frames_ctx_delegate avfilter_link_get_hw_frames_ctx;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
@@ -3517,46 +3501,6 @@ public static unsafe partial class vectors
     public static avutil_version_delegate avutil_version;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
-    public delegate string postproc_configuration_delegate();
-    public static postproc_configuration_delegate postproc_configuration;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]
-    public delegate string postproc_license_delegate();
-    public static postproc_license_delegate postproc_license;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate uint postproc_version_delegate();
-    public static postproc_version_delegate postproc_version;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void pp_free_context_delegate(void* @ppContext);
-    public static pp_free_context_delegate pp_free_context;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void pp_free_mode_delegate(void* @mode);
-    public static pp_free_mode_delegate pp_free_mode;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void* pp_get_context_delegate(int @width, int @height, int @flags);
-    public static pp_get_context_delegate pp_get_context;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void* pp_get_mode_by_name_and_quality_delegate(    
-    #if NETSTANDARD2_1_OR_GREATER
-    [MarshalAs(UnmanagedType.LPUTF8Str)]
-    #else
-    [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-    #endif
-    string @name, int @quality);
-    public static pp_get_mode_by_name_and_quality_delegate pp_get_mode_by_name_and_quality;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void pp_postprocess_delegate(in byte_ptr3 @src, in int3 @srcStride, ref byte_ptr3 @dst, in int3 @dstStride, int @horizontalSize, int @verticalSize, sbyte* @QP_store, int @QP_stride, void* @mode, void* @ppContext, int @pict_type);
-    public static pp_postprocess_delegate pp_postprocess;
-    
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate SwrContext* swr_alloc_delegate();
     public static swr_alloc_delegate swr_alloc;
     
@@ -3667,8 +3611,16 @@ public static unsafe partial class vectors
     public static sws_frame_end_delegate sws_frame_end;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_frame_setup_delegate(SwsContext* @ctx, AVFrame* @dst, AVFrame* @src);
+    public static sws_frame_setup_delegate sws_frame_setup;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int sws_frame_start_delegate(SwsContext* @c, AVFrame* @dst, AVFrame* @src);
     public static sws_frame_start_delegate sws_frame_start;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void sws_free_context_delegate(SwsContext** @ctx);
+    public static sws_free_context_delegate sws_free_context;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void sws_freeContext_delegate(SwsContext* @swsContext);
@@ -3715,6 +3667,10 @@ public static unsafe partial class vectors
     public static sws_init_context_delegate sws_init_context;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_is_noop_delegate(AVFrame* @dst, AVFrame* @src);
+    public static sws_is_noop_delegate sws_is_noop;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int sws_isSupportedEndiannessConversion_delegate(AVPixelFormat @pix_fmt);
     public static sws_isSupportedEndiannessConversion_delegate sws_isSupportedEndiannessConversion;
     
@@ -3757,6 +3713,26 @@ public static unsafe partial class vectors
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int sws_setColorspaceDetails_delegate(SwsContext* @c, in int4 @inv_table, int @srcRange, in int4 @table, int @dstRange, int @brightness, int @contrast, int @saturation);
     public static sws_setColorspaceDetails_delegate sws_setColorspaceDetails;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_test_colorspace_delegate(AVColorSpace @colorspace, int @output);
+    public static sws_test_colorspace_delegate sws_test_colorspace;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_test_format_delegate(AVPixelFormat @format, int @output);
+    public static sws_test_format_delegate sws_test_format;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_test_frame_delegate(AVFrame* @frame, int @output);
+    public static sws_test_frame_delegate sws_test_frame;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_test_primaries_delegate(AVColorPrimaries @primaries, int @output);
+    public static sws_test_primaries_delegate sws_test_primaries;
+    
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int sws_test_transfer_delegate(AVColorTransferCharacteristic @trc, int @output);
+    public static sws_test_transfer_delegate sws_test_transfer;
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(ConstCharPtrMarshaler))]

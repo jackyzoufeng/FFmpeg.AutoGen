@@ -46,7 +46,7 @@ Steps to generate:
 
 ## License
 
-Copyright © Ruslan Balanukhin 2023
+Copyright © Ruslan Balanukhin 2025 (Rationale One)
 All rights reserved.
 
 Distributed under the GNU Lesser General Public License (LGPL) version 3.  

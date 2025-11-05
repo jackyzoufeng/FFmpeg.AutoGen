@@ -4,22 +4,6 @@ using System.Runtime.InteropServices;
 namespace FFmpeg.AutoGen;
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int _query_func (AVFilterContext* @p0);
-public unsafe struct _query_func_func
-{
-    public IntPtr Pointer;
-    public static implicit operator _query_func_func(_query_func func) => new _query_func_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int _query_func2 (AVFilterContext* @p0, AVFilterFormatsConfig** @cfg_in, AVFilterFormatsConfig** @cfg_out);
-public unsafe struct _query_func2_func
-{
-    public IntPtr Pointer;
-    public static implicit operator _query_func2_func(_query_func2 func) => new _query_func2_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 public unsafe delegate void av_buffer_create_free (void* @opaque, byte* @data);
 public unsafe struct av_buffer_create_free_func
 {
@@ -253,58 +237,6 @@ public unsafe struct AVD3D11VADeviceContext_unlock_func
 {
     public IntPtr Pointer;
     public static implicit operator AVD3D11VADeviceContext_unlock_func(AVD3D11VADeviceContext_unlock func) => new AVD3D11VADeviceContext_unlock_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int AVFilter_activate (AVFilterContext* @ctx);
-public unsafe struct AVFilter_activate_func
-{
-    public IntPtr Pointer;
-    public static implicit operator AVFilter_activate_func(AVFilter_activate func) => new AVFilter_activate_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int AVFilter_init (AVFilterContext* @ctx);
-public unsafe struct AVFilter_init_func
-{
-    public IntPtr Pointer;
-    public static implicit operator AVFilter_init_func(AVFilter_init func) => new AVFilter_init_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int AVFilter_preinit (AVFilterContext* @ctx);
-public unsafe struct AVFilter_preinit_func
-{
-    public IntPtr Pointer;
-    public static implicit operator AVFilter_preinit_func(AVFilter_preinit func) => new AVFilter_preinit_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate int AVFilter_process_command (AVFilterContext* @p0,     
-    #if NETSTANDARD2_1_OR_GREATER
-    [MarshalAs(UnmanagedType.LPUTF8Str)]
-    #else
-    [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-    #endif
-    string @cmd,     
-    #if NETSTANDARD2_1_OR_GREATER
-    [MarshalAs(UnmanagedType.LPUTF8Str)]
-    #else
-    [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]
-    #endif
-    string @arg, byte* @res, int @res_len, int @flags);
-public unsafe struct AVFilter_process_command_func
-{
-    public IntPtr Pointer;
-    public static implicit operator AVFilter_process_command_func(AVFilter_process_command func) => new AVFilter_process_command_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
-}
-
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate void AVFilter_uninit (AVFilterContext* @ctx);
-public unsafe struct AVFilter_uninit_func
-{
-    public IntPtr Pointer;
-    public static implicit operator AVFilter_uninit_func(AVFilter_uninit func) => new AVFilter_uninit_func { Pointer = func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(func) };
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

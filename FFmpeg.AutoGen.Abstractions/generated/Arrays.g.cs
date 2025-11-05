@@ -24,6 +24,28 @@ public unsafe struct AVRational2 : IFixedArray<AVRational>
     public static implicit operator AVRational[](AVRational2 @struct) => @struct.ToArray();
 }
 
+public unsafe struct double2 : IFixedArray<double>
+{
+    public static readonly int ArrayLength = 2;
+    public int Length => 2;
+    fixed double _[2];
+    
+    public double this[uint i]
+    {
+        get => _[i];
+        set => _[i] = value;
+    }
+    public double[] ToArray()
+    {
+        var a = new double[2]; for (uint i = 0; i < 2; i++) a[i] = _[i]; return a;
+    }
+    public void UpdateFrom(double[] array)
+    {
+        uint i = 0; foreach(var value in array) { _[i++] = value; if (i >= 2) return; }
+    }
+    public static implicit operator double[](double2 @struct) => @struct.ToArray();
+}
+
 public unsafe struct short2 : IFixedArray<short>
 {
     public static readonly int ArrayLength = 2;
@@ -132,50 +154,6 @@ public unsafe struct AVRational3x2 : IFixedArray<AVRational2>
         fixed (AVRational2* p0 = &_0) { uint i = 0; foreach(var value in array) { *(p0 + i++) = value; if (i >= 3) return; } }
     }
     public static implicit operator AVRational2[](AVRational3x2 @struct) => @struct.ToArray();
-}
-
-public unsafe struct byte_ptr3 : IFixedArray
-{
-    public static readonly int ArrayLength = 3;
-    public int Length => 3;
-    byte* _0; byte* _1; byte* _2;
-    
-    public byte* this[uint i]
-    {
-        get { if (i >= 3) throw new ArgumentOutOfRangeException(); fixed (byte** p0 = &_0) { return *(p0 + i); } }
-        set { if (i >= 3) throw new ArgumentOutOfRangeException(); fixed (byte** p0 = &_0) { *(p0 + i) = value;  } }
-    }
-    public byte*[] ToArray()
-    {
-        fixed (byte** p0 = &_0) { var a = new byte*[3]; for (uint i = 0; i < 3; i++) a[i] = *(p0 + i); return a; }
-    }
-    public void UpdateFrom(byte*[] array)
-    {
-        fixed (byte** p0 = &_0) { uint i = 0; foreach(var value in array) { *(p0 + i++) = value; if (i >= 3) return; } }
-    }
-    public static implicit operator byte*[](byte_ptr3 @struct) => @struct.ToArray();
-}
-
-public unsafe struct int3 : IFixedArray<int>
-{
-    public static readonly int ArrayLength = 3;
-    public int Length => 3;
-    fixed int _[3];
-    
-    public int this[uint i]
-    {
-        get => _[i];
-        set => _[i] = value;
-    }
-    public int[] ToArray()
-    {
-        var a = new int[3]; for (uint i = 0; i < 3; i++) a[i] = _[i]; return a;
-    }
-    public void UpdateFrom(int[] array)
-    {
-        uint i = 0; foreach(var value in array) { _[i++] = value; if (i >= 3) return; }
-    }
-    public static implicit operator int[](int3 @struct) => @struct.ToArray();
 }
 
 public unsafe struct short3x2 : IFixedArray<short2>
