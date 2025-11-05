@@ -1,6 +1,5 @@
 # Linguist
 FFmpeg/* linguist-vendored
-
 # Auto detect text files and perform LF normalization
 * text=auto
 # Custom for Visual Studio
