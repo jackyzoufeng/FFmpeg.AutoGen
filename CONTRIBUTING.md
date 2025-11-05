@@ -51,6 +51,28 @@ This project is transitioning to a semi-managed model. The maintainer welcomes c
 - Visual Studio 2022 with C# and C++ desktop development workloads
 - Windows SDK for desktop
 - .NET 6.0, 8.0, and 9.0 SDKs
+- **Git LFS** (for handling large FFmpeg binary files)
+
+### Git LFS Setup
+
+This repository uses Git LFS (Large File Storage) for managing large FFmpeg binary files.
+
+**Install Git LFS:**
+
+```bash
+# On Windows (using Chocolatey)
+choco install git-lfs
+
+# Or download from https://git-lfs.github.com/
+```
+
+**Initialize Git LFS in your repository:**
+
+```bash
+git lfs install
+```
+
+After cloning the repository, Git LFS will automatically download the tracked binary files.
 
 ### Building
 
