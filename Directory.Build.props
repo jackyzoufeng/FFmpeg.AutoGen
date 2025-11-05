@@ -5,12 +5,13 @@
     <Authors>Ruslan Balanukhin</Authors>
     <Company>Rationale One</Company>
     <Product>FFmpeg.AutoGen</Product>
-    <Copyright>Copyright © Ruslan Balanukhin 2023 All rights reserved.</Copyright>
+    <Copyright>Copyright © Ruslan Balanukhin 2025 All rights reserved.</Copyright>
     <PackageProjectUrl>https://github.com/Ruslan-B/FFmpeg.AutoGen</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <PackageTags>ffmpeg</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

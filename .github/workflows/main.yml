@@ -1,9 +1,9 @@
 name: main
 on:
   push:
-    branches: [master]
+    branches: [master, "8.0"]
   pull_request:
-    branches: [master]
+    branches: [master, "8.0"]
 
 jobs:
   build:
@@ -12,10 +12,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: |
+            6.0.x
+            8.0.x
+            9.0.x
       - name: Install FFmpeg - linux
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -29,7 +32,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: matrix.os == 'windows-latest'
         with:
-          path: FFmpeg.AutoGen/bin/Release/*.nupkg
+          name: nuget-packages
+          path: |
+            **/*.nupkg
           if-no-files-found: error
       - name: Codegen Build & Test
         if: matrix.os == 'windows-latest'

@@ -1,3 +1,18 @@
+## Important Announcement
+
+**This project is undergoing a transition to a semi-managed model over the coming months.**
+
+- **All existing packages and versions will continue to work** - there will be no breaking changes to existing functionality
+- The project is now **MIT licensed** (changed from LGPL) - see LICENSE.txt for details
+- **Contributions are welcome!** If you'd like to help with the project, please feel free to contribute
+- The FFmpeg binaries continue to be distributed with their original licenses from the source
+
+**Founder & Maintainer:** Ruslan Balanukhin (Rationale One)
+
+For questions and support, please continue using [stackoverflow.com](https://stackoverflow.com/search?tab=newest&q=ffmpeg%20autogen) or the [questions repository](https://github.com/Ruslan-B/FFmpeg.AutoGen.Questions/issues).
+
+---
+
 # Important
 **The FFmpeg API is vast and complex and this project exposes it with minimum modifications - support is very limited.
 Please consider to ask *how to* questions on [stackoverflow.com](https://stackoverflow.com/search?tab=newest&q=ffmpeg%20autogen) or in special repository on [github.com](https://github.com/Ruslan-B/FFmpeg.AutoGen.Questions/issues). 
@@ -46,20 +61,11 @@ Steps to generate:
 
 ## License
 
-Copyright © Ruslan Balanukhin 2025 (Rationale One)
+Copyright © 2025 Ruslan Balanukhin (Rationale One)  
 All rights reserved.
 
-Distributed under the GNU Lesser General Public License (LGPL) version 3.  
-http://www.gnu.org/licenses/lgpl.html
+Distributed under the **MIT License**.  
+See LICENSE.txt for full license text.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**Note:** FFmpeg binaries are distributed under their original licenses (GPL/LGPL) from the source.
+Please refer to [FFmpeg License](https://www.ffmpeg.org/legal.html) for details.

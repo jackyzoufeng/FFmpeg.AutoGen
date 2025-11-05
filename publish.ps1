@@ -1,15 +1,117 @@
-﻿$version = (Select-Xml -Path Directory.Build.props -XPath '/Project/PropertyGroup/Version').Node.'#text'
-dotnet build --configuration Release
-dotnet test --configuration Release
-dotnet pack --configuration Release
-$confirmation = Read-Host "Are you sure you want to push nuget packages v$version (y - yes, n - no):"
-if ($confirmation -eq 'y') {
-	$apiKey = $Env:NUGET_API_KEY
-	dotnet nuget push .\FFmpeg.AutoGen\bin\Release\FFmpeg.AutoGen.$version.nupkg --source https://api.nuget.org/v3/index.json --api-key $apiKey
-	dotnet nuget push .\FFmpeg.AutoGen.Abstractions\bin\Release\FFmpeg.AutoGen.Abstractions.$version.nupkg --source https://api.nuget.org/v3/index.json --api-key $apiKey
-	dotnet nuget push .\FFmpeg.AutoGen.Bindings.DynamicallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLinked.$version.nupkg --source https://api.nuget.org/v3/index.json --api-key $apiKey
-	dotnet nuget push .\FFmpeg.AutoGen.Bindings.DynamicallyLoaded\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLoaded.$version.nupkg --source https://api.nuget.org/v3/index.json --api-key $apiKey
-	dotnet nuget push .\FFmpeg.AutoGen.Bindings.StaticallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.StaticallyLinked.$version.nupkg --source https://api.nuget.org/v3/index.json --api-key $apiKey
-	git tag v$version
-	git push origin v$version
+﻿# Local publish script for FFmpeg.AutoGen
+# This script is for maintainer use only
+# For automated publishing, use GitHub Actions workflow
+
+$ErrorActionPreference = "Stop"
+
+Write-Host "FFmpeg.AutoGen - Local Publish Script" -ForegroundColor Cyan
+Write-Host "======================================" -ForegroundColor Cyan
+
+# Get version from Directory.Build.props
+$version = (Select-Xml -Path Directory.Build.props -XPath '/Project/PropertyGroup/Version').Node.'#text'
+Write-Host "`nVersion: $version" -ForegroundColor Yellow
+
+# Check if we're on the correct branch
+$currentBranch = git rev-parse --abbrev-ref HEAD
+Write-Host "Current branch: $currentBranch" -ForegroundColor Yellow
+
+if ($currentBranch -ne "8.0" -and $currentBranch -ne "master") {
+    $continue = Read-Host "Warning: You are not on '8.0' or 'master' branch. Continue? (y/n)"
+    if ($continue -ne 'y') {
+        Write-Host "Aborted." -ForegroundColor Red
+        exit 1
+    }
 }
+
+# Check for uncommitted changes
+$gitStatus = git status --porcelain
+if ($gitStatus) {
+    Write-Host "`nWarning: You have uncommitted changes:" -ForegroundColor Red
+    git status --short
+    $continue = Read-Host "Continue anyway? (y/n)"
+    if ($continue -ne 'y') {
+        Write-Host "Aborted. Please commit your changes first." -ForegroundColor Red
+        exit 1
+    }
+}
+
+# Check if tag already exists
+$tagExists = git tag -l "v$version"
+if ($tagExists) {
+    Write-Host "`nWarning: Tag v$version already exists!" -ForegroundColor Red
+    $continue = Read-Host "Continue? This may cause issues. (y/n)"
+    if ($continue -ne 'y') {
+        Write-Host "Aborted." -ForegroundColor Red
+        exit 1
+    }
+}
+
+Write-Host "`nBuilding..." -ForegroundColor Green
+dotnet build --configuration Release
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Build failed!" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "`nRunning tests..." -ForegroundColor Green
+dotnet test --configuration Release --no-build
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Tests failed!" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "`nCreating packages..." -ForegroundColor Green
+dotnet pack --configuration Release --no-build
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Pack failed!" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "`nPackages to be published:" -ForegroundColor Cyan
+$packages = @(
+    ".\FFmpeg.AutoGen\bin\Release\FFmpeg.AutoGen.$version.nupkg",
+    ".\FFmpeg.AutoGen.Abstractions\bin\Release\FFmpeg.AutoGen.Abstractions.$version.nupkg",
+    ".\FFmpeg.AutoGen.Bindings.DynamicallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLinked.$version.nupkg",
+    ".\FFmpeg.AutoGen.Bindings.DynamicallyLoaded\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLoaded.$version.nupkg",
+    ".\FFmpeg.AutoGen.Bindings.StaticallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.StaticallyLinked.$version.nupkg"
+)
+
+foreach ($pkg in $packages) {
+    if (Test-Path $pkg) {
+        Write-Host "  ✓ $pkg" -ForegroundColor Green
+    } else {
+        Write-Host "  ✗ $pkg NOT FOUND" -ForegroundColor Red
+        exit 1
+    }
+}
+
+$confirmation = Read-Host "`nAre you sure you want to push nuget packages v$version to nuget.org? (y/n)"
+if ($confirmation -ne 'y') {
+    Write-Host "Aborted." -ForegroundColor Yellow
+    exit 0
+}
+
+# Check for API key
+$apiKey = $Env:NUGET_API_KEY
+if ([string]::IsNullOrWhiteSpace($apiKey)) {
+    Write-Host "`nNUGET_API_KEY environment variable is not set!" -ForegroundColor Red
+    Write-Host "Please set it first: `$Env:NUGET_API_KEY = 'your-key'" -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "`nPublishing to NuGet.org..." -ForegroundColor Green
+foreach ($pkg in $packages) {
+    Write-Host "Publishing $(Split-Path $pkg -Leaf)..." -ForegroundColor Cyan
+    dotnet nuget push $pkg --source https://api.nuget.org/v3/index.json --api-key $apiKey --skip-duplicate
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Failed to publish $pkg" -ForegroundColor Red
+        exit 1
+    }
+}
+
+Write-Host "`nCreating git tag v$version..." -ForegroundColor Green
+git tag v$version
+git push origin v$version
+
+Write-Host "`n✓ Successfully published version $version!" -ForegroundColor Green
+Write-Host "Packages are now available on NuGet.org" -ForegroundColor Green

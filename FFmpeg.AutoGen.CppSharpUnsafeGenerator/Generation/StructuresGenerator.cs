@@ -27,7 +27,7 @@ internal sealed class StructuresGenerator : GeneratorBase<StructureDefinition>
 
     protected override void GenerateDefinition(StructureDefinition structure)
     {
-         this.WriteSummary(structure);
+        this.WriteSummary(structure);
         if (!structure.IsComplete) WriteLine("/// <remarks>This struct is incomplete.</remarks>");
         this.WriteObsoletion(structure);
         if (structure.IsUnion) WriteLine("[StructLayout(LayoutKind.Explicit)]");

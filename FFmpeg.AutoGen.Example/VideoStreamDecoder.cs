@@ -58,7 +58,8 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         var pPacket = _pPacket;
         ffmpeg.av_packet_free(&pPacket);
 
-        ffmpeg.avcodec_close(_pCodecContext);
+        AVCodecContext** @avctx = stackalloc[] { _pCodecContext };
+        ffmpeg.avcodec_free_context(@avctx);
         var pFormatContext = _pFormatContext;
         ffmpeg.avformat_close_input(&pFormatContext);
     }

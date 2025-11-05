@@ -45,7 +45,7 @@ public sealed unsafe class H264VideoStreamEncoder : IDisposable
 
     public void Dispose()
     {
-        ffmpeg.avcodec_close(_pCodecContext);
+        //ffmpeg.avcodec_close(_pCodecContext);
         ffmpeg.av_free(_pCodecContext);
     }
 
