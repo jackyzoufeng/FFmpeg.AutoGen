@@ -9,7 +9,18 @@ Write-Host "======================================" -ForegroundColor Cyan
 
 # Get version from Directory.Build.props
 $version = (Select-Xml -Path Directory.Build.props -XPath '/Project/PropertyGroup/Version').Node.'#text'
+
+# NuGet normalizes version by removing trailing zero segments
+# For example: X.Y.Z.0 becomes X.Y.Z, but X.Y.Z.W (where W != 0) stays as is
+$versionParts = $version.Split('.')
+$packageVersion = $version
+if ($versionParts.Length -eq 4 -and $versionParts[3] -eq '0') {
+    $packageVersion = "$($versionParts[0]).$($versionParts[1]).$($versionParts[2])"
+    Write-Host "`nNote: Version $version will be normalized to $packageVersion in package names" -ForegroundColor Yellow
+}
+
 Write-Host "`nVersion: $version" -ForegroundColor Yellow
+Write-Host "Package Version: $packageVersion" -ForegroundColor Yellow
 
 # Check if we're on the correct branch
 $currentBranch = git rev-parse --abbrev-ref HEAD
@@ -69,11 +80,11 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "`nPackages to be published:" -ForegroundColor Cyan
 $packages = @(
-    ".\FFmpeg.AutoGen\bin\Release\FFmpeg.AutoGen.$version.nupkg",
-    ".\FFmpeg.AutoGen.Abstractions\bin\Release\FFmpeg.AutoGen.Abstractions.$version.nupkg",
-    ".\FFmpeg.AutoGen.Bindings.DynamicallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLinked.$version.nupkg",
-    ".\FFmpeg.AutoGen.Bindings.DynamicallyLoaded\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLoaded.$version.nupkg",
-    ".\FFmpeg.AutoGen.Bindings.StaticallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.StaticallyLinked.$version.nupkg"
+    ".\FFmpeg.AutoGen\bin\Release\FFmpeg.AutoGen.$packageVersion.nupkg",
+    ".\FFmpeg.AutoGen.Abstractions\bin\Release\FFmpeg.AutoGen.Abstractions.$packageVersion.nupkg",
+    ".\FFmpeg.AutoGen.Bindings.DynamicallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLinked.$packageVersion.nupkg",
+    ".\FFmpeg.AutoGen.Bindings.DynamicallyLoaded\bin\Release\FFmpeg.AutoGen.Bindings.DynamicallyLoaded.$packageVersion.nupkg",
+    ".\FFmpeg.AutoGen.Bindings.StaticallyLinked\bin\Release\FFmpeg.AutoGen.Bindings.StaticallyLinked.$packageVersion.nupkg"
 )
 
 foreach ($pkg in $packages) {

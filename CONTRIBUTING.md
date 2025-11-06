@@ -1,4 +1,4 @@
-# Contributing to FFmpeg.AutoGen
+﻿# Contributing to FFmpeg.AutoGen
 
 Thank you for your interest in contributing to FFmpeg.AutoGen! 
 
@@ -107,3 +107,40 @@ For general usage questions, please use:
 - [Questions Repository](https://github.com/Ruslan-B/FFmpeg.AutoGen.Questions/issues)
 
 For project-specific questions about contributions, open an issue in this repository.
+
+## Summary
+
+This PR updates the project documentation and improves the publishing workflow in preparation for transitioning to a semi-managed model.
+
+## Changes
+
+### Documentation
+- ✅ Update README.md with MIT license and project transition announcement
+- ✅ Update LICENSE section to reflect MIT instead of LGPL
+- ✅ Add CONTRIBUTING.md with contributor guidelines
+- ✅ Add PUBLISHING.md with maintainer publishing instructions
+- ✅ Add PR template for better pull request process
+
+### Build & Publish
+- ✅ Update Directory.Build.props with MIT license and 2025 copyright
+- ✅ Improve publish.ps1 with better error handling, validation checks, and user-friendly output
+- ✅ Add GitHub Actions workflow for automated NuGet publishing (`publish.yml`)
+- ✅ Update main.yml workflow to support .NET 9 and branch 8.0
+
+### Infrastructure
+- ✅ Configure Git LFS for FFmpeg binary files
+- ✅ Migrate existing FFmpeg binaries to Git LFS
+
+## Breaking Changes
+
+None - all existing packages and functionality remain unchanged.
+
+## Testing
+
+- [x] Local build passes (`dotnet build -c Release`)
+- [x] Local tests pass (`dotnet test -c Release`)
+- [ ] Local NuGet package creation (will test before merge)
+
+## Notes
+
+This PR prepares the project for future changes while maintaining backward compatibility. All existing NuGet packages will continue to work as before.

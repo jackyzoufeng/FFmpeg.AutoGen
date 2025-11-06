@@ -11,7 +11,6 @@
     <AssemblyVersion>$(Version)</AssemblyVersion>
     <FileVersion>$(Version)</FileVersion>
     <PackageTags>ffmpeg</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -22,8 +21,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)LICENSE.txt" Link="LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
-    <None Include="$(MSBuildThisFileDirectory)README.md" Link="README.md" Pack="true" PackagePath="README.md" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.txt" Link="LICENSE.txt" Pack="true" PackagePath="" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" Link="README.md" Pack="true" PackagePath="" />
   </ItemGroup>
   
 </Project>
