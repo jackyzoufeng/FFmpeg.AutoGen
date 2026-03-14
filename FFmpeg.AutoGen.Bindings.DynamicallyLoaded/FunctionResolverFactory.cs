@@ -12,7 +12,7 @@ public static class FunctionResolverFactory
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return PlatformID.Win32NT;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return PlatformID.Unix;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return PlatformID.MacOSX;
-        throw new PlatformNotSupportedException();
+        return PlatformID.Unix; // Android, iOS, and other Unix-like platforms
 #else
         return Environment.OSVersion.Platform;
 
@@ -30,7 +30,7 @@ public static class FunctionResolverFactory
             case PlatformID.Win32NT:
                 return new WindowsFunctionResolver();
             default:
-                throw new PlatformNotSupportedException();
+                return new LinuxFunctionResolver();
         }
     }
 }
