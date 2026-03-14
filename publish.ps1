@@ -26,8 +26,8 @@ Write-Host "Package Version: $packageVersion" -ForegroundColor Yellow
 $currentBranch = git rev-parse --abbrev-ref HEAD
 Write-Host "Current branch: $currentBranch" -ForegroundColor Yellow
 
-if ($currentBranch -ne "8.0" -and $currentBranch -ne "master") {
-    $continue = Read-Host "Warning: You are not on '8.0' or 'master' branch. Continue? (y/n)"
+if ($currentBranch -ne "main") {
+    $continue = Read-Host "Warning: You are not on 'main' branch. Continue? (y/n)"
     if ($continue -ne 'y') {
         Write-Host "Aborted." -ForegroundColor Red
         exit 1

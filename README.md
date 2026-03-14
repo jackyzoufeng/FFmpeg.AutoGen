@@ -32,10 +32,13 @@ The basic example of the library usage: video decoding, conversion and frame ext
 For the more sophisticated operations please refer to offical [ffmpeg Documentation](https://www.ffmpeg.org/documentation.html) expecially API section of it.
 Nuget packages version uses [semantic versioning](https://semver.org/) and in sync with MAJOR and MINOR version of FFmpeg as PATCH incremets does not changing API.
 
-- on Windows:  
-Native ffmpeg libraries are pre bundled in this repository, please note the are **GPL**(!) libraries. 
+- on Windows:
 The x64 libraries source from [CODEX FFMPEG](https://www.gyan.dev/ffmpeg/builds/).
-Please check to example project it shows how specify path to libraries.  
+Run the download script to get the required DLLs:
+```powershell
+.\FFmpeg\download-ffmpeg.ps1
+```
+Please check the example project, it shows how to specify the path to libraries.
 
 - on OS X:  
 Install ffmpeg via [Homebrew](https://formulae.brew.sh/formula/ffmpeg):

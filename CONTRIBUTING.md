@@ -18,7 +18,7 @@ This project is transitioning to a semi-managed model. The maintainer welcomes c
 
 ### Submitting Pull Requests
 
-1. **Fork the repository** and create your branch from `8.0` or `master`
+1. **Fork the repository** and create your branch from `main`
    ```bash
    git checkout -b feature/my-new-feature
    ```
@@ -38,7 +38,7 @@ This project is transitioning to a semi-managed model. The maintainer welcomes c
    - Use clear commit messages
    - Reference related issues
 
-5. **Push to your fork** and submit a pull request to the `8.0` branch
+5. **Push to your fork** and submit a pull request to the `main` branch
 
 6. **Wait for review**
    - The maintainer will review your PR
@@ -51,28 +51,15 @@ This project is transitioning to a semi-managed model. The maintainer welcomes c
 - Visual Studio 2022 with C# and C++ desktop development workloads
 - Windows SDK for desktop
 - .NET 6.0, 8.0, and 9.0 SDKs
-- **Git LFS** (for handling large FFmpeg binary files)
+- **7-Zip** (for extracting FFmpeg binaries)
 
-### Git LFS Setup
+### FFmpeg Binaries Setup
 
-This repository uses Git LFS (Large File Storage) for managing large FFmpeg binary files.
+After cloning, download the required FFmpeg DLLs:
 
-**Install Git LFS:**
-
-```bash
-# On Windows (using Chocolatey)
-choco install git-lfs
-
-# Or download from https://git-lfs.github.com/
+```powershell
+.\FFmpeg\download-ffmpeg.ps1
 ```
-
-**Initialize Git LFS in your repository:**
-
-```bash
-git lfs install
-```
-
-After cloning the repository, Git LFS will automatically download the tracked binary files.
 
 ### Building
 
@@ -107,40 +94,3 @@ For general usage questions, please use:
 - [Questions Repository](https://github.com/Ruslan-B/FFmpeg.AutoGen.Questions/issues)
 
 For project-specific questions about contributions, open an issue in this repository.
-
-## Summary
-
-This PR updates the project documentation and improves the publishing workflow in preparation for transitioning to a semi-managed model.
-
-## Changes
-
-### Documentation
-- ✅ Update README.md with MIT license and project transition announcement
-- ✅ Update LICENSE section to reflect MIT instead of LGPL
-- ✅ Add CONTRIBUTING.md with contributor guidelines
-- ✅ Add PUBLISHING.md with maintainer publishing instructions
-- ✅ Add PR template for better pull request process
-
-### Build & Publish
-- ✅ Update Directory.Build.props with MIT license and 2025 copyright
-- ✅ Improve publish.ps1 with better error handling, validation checks, and user-friendly output
-- ✅ Add GitHub Actions workflow for automated NuGet publishing (`publish.yml`)
-- ✅ Update main.yml workflow to support .NET 9 and branch 8.0
-
-### Infrastructure
-- ✅ Configure Git LFS for FFmpeg binary files
-- ✅ Migrate existing FFmpeg binaries to Git LFS
-
-## Breaking Changes
-
-None - all existing packages and functionality remain unchanged.
-
-## Testing
-
-- [x] Local build passes (`dotnet build -c Release`)
-- [x] Local tests pass (`dotnet test -c Release`)
-- [ ] Local NuGet package creation (will test before merge)
-
-## Notes
-
-This PR prepares the project for future changes while maintaining backward compatibility. All existing NuGet packages will continue to work as before.

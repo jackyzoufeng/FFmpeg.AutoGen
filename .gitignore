@@ -105,9 +105,15 @@ UpgradeLog*.XML
 
 *.stackdump
 
-# Local 
+# Local
 /FFmpeg.AutoGen.Example/frames
+
+# FFmpeg binaries (download via FFmpeg/download-ffmpeg.ps1)
+FFmpeg/bin/
 
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Claude
+.claude/

@@ -20,4 +20,4 @@ FFmpeg/* linguist-vendored
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
-FFmpeg/bin/**/*.dll filter=lfs diff=lfs merge=lfs -text
+
