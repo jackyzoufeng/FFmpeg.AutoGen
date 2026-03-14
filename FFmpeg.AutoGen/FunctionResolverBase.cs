@@ -13,10 +13,9 @@ public abstract class FunctionResolverBase : IFunctionResolver
         {
             { "avcodec", new[] { "avutil", "swresample" } },
             { "avdevice", new[] { "avcodec", "avfilter", "avformat", "avutil" } },
-            { "avfilter", new[] { "avcodec", "avformat", "avutil", "postproc", "swresample", "swscale" } },
+            { "avfilter", new[] { "avcodec", "avformat", "avutil", "swresample", "swscale" } },
             { "avformat", new[] { "avcodec", "avutil" } },
             { "avutil", new string[] { } },
-            { "postproc", new[] { "avutil" } },
             { "swresample", new[] { "avutil" } },
             { "swscale", new[] { "avutil" } }
         };

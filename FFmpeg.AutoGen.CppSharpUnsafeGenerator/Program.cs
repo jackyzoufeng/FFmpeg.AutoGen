@@ -108,9 +108,6 @@ internal class Program
         // libswresample
         yield return p.Parse("libswresample/swresample.h");
 
-        // libpostproc
-        yield return p.Parse("libpostproc/postprocess.h");
-
         // libswscale
         yield return p.Parse("libswscale/swscale.h");
 
