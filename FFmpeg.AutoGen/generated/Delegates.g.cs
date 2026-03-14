@@ -106,7 +106,7 @@ public unsafe struct AVClass_get_category_func
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate string AVClass_item_name (void* @ctx);
+public unsafe delegate byte* AVClass_item_name (void* @ctx);
 public unsafe struct AVClass_item_name_func
 {
     public IntPtr Pointer;

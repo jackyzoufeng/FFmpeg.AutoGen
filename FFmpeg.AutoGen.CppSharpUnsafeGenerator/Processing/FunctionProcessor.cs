@@ -82,12 +82,27 @@ internal class FunctionProcessor
         {
             Name = $"{name}_func",
             FunctionName = name,
-            ReturnType = GetReturnType(functionType.ReturnType.Type, name),
+            ReturnType = GetDelegateReturnType(functionType.ReturnType.Type, name),
             Parameters = functionType.Parameters.Select(GetParameter).ToArray()
         };
         _context.AddDefinition(@delegate);
 
         return @delegate;
+    }
+
+    private TypeDefinition GetDelegateReturnType(Type type, string name)
+    {
+        // For delegates (function pointers), const char* must be byte* not string,
+        // because string marshaling does not work with unmanaged function pointers.
+        if (type is PointerType pointerType &&
+            pointerType.QualifiedPointee.Qualifiers.IsConst &&
+            pointerType.Pointee is BuiltinType builtinType &&
+            builtinType.Type == PrimitiveType.Char)
+        {
+            return new TypeDefinition { Name = "byte*" };
+        }
+
+        return GetReturnType(type, name);
     }
 
     private FunctionParameter GetParameter(Parameter parameter, int position)
