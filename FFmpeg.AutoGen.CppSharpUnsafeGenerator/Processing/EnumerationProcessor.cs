@@ -20,10 +20,49 @@ internal class EnumerationProcessor
 
             var enumerationName = enumeration.Name;
             if (string.IsNullOrEmpty(enumerationName))
-                continue;
+            {
+                enumerationName = DeriveNameFromMembers(enumeration);
+                if (enumerationName == null) continue;
+            }
 
             MakeDefinition(enumeration, enumerationName);
         }
+    }
+
+    /// <summary>
+    /// Derives a synthetic enum name from member names by finding the longest common prefix.
+    /// E.g. AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX, AV_CODEC_HW_CONFIG_METHOD_INTERNAL
+    /// → common prefix "AV_CODEC_HW_CONFIG_METHOD_" → PascalCase "AvCodecHwConfigMethod"
+    /// </summary>
+    private static string DeriveNameFromMembers(Enumeration enumeration)
+    {
+        var items = enumeration.Items;
+        if (items.Count == 0) return null;
+
+        // Find longest common prefix up to last underscore
+        var prefix = items[0].Name;
+        foreach (var item in items.Skip(1))
+        {
+            var len = 0;
+            while (len < prefix.Length && len < item.Name.Length && prefix[len] == item.Name[len])
+                len++;
+            prefix = prefix[..len];
+        }
+
+        // Trim to last underscore boundary
+        var lastUnderscore = prefix.LastIndexOf('_');
+        if (lastUnderscore <= 0) return null;
+        prefix = prefix[..(lastUnderscore + 1)];
+
+        // Need at least 2 segments (e.g. "AV_SOMETHING_")
+        if (prefix.Count(c => c == '_') < 2) return null;
+
+        // Convert to PascalCase: "AV_CODEC_HW_CONFIG_METHOD_" → "AvCodecHwConfigMethod"
+        var parts = prefix.TrimEnd('_').Split('_');
+        var name = string.Concat(parts.Select(p =>
+            p.Length <= 1 ? p.ToUpperInvariant() : char.ToUpperInvariant(p[0]) + p[1..].ToLowerInvariant()));
+
+        return name;
     }
 
     public void MakeDefinition(Enumeration enumeration, string name)
