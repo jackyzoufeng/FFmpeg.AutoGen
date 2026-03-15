@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -14,8 +14,16 @@ internal class MacroPostProcessor
     private static readonly Regex EolEscapeRegex =
         new(@"\\\s*[\r\n|\r|\n]\s*", RegexOptions.Compiled | RegexOptions.Multiline);
 
+    // Regex to parse function-like macro definitions: (param1, param2, ...) body
+    private static readonly Regex FunctionMacroRegex =
+        new(@"^\(([^)]*)\)\s*(.+)$", RegexOptions.Compiled | RegexOptions.Singleline);
+
     private readonly ProcessingContext _context;
     private Dictionary<string, IExpression> _macroExpressionMap;
+
+    // Function-like macro definitions with ## token concatenation
+    // Key: macro name, Value: (parameter names, raw body string)
+    private readonly Dictionary<string, (string[] Params, string Body)> _functionMacroMap = new();
 
     public MacroPostProcessor(ProcessingContext context) => _context = context;
 
@@ -24,18 +32,31 @@ internal class MacroPostProcessor
         _macroExpressionMap = new Dictionary<string, IExpression>(macros.Count);
 
         foreach (var macro in macros)
+        {
+            var expression = CleanUp(macro.Expression);
+
+            // Detect function-like macro definitions with ## (token concatenation)
+            var funcMatch = FunctionMacroRegex.Match(expression);
+            if (funcMatch.Success && expression.Contains("##"))
+            {
+                var parameters = funcMatch.Groups[1].Value.Split(',').Select(p => p.Trim()).ToArray();
+                var body = funcMatch.Groups[2].Value.Trim();
+                _functionMacroMap[macro.Name] = (parameters, body);
+            }
+
             try
             {
-                _macroExpressionMap.Add(macro.Name, ClangMacroParser.Parser.Parse(macro.Expression));
+                _macroExpressionMap.Add(macro.Name, ClangMacroParser.Parser.Parse(expression));
             }
             catch (NotSupportedException)
             {
-                Trace.TraceError($"Cannot parse macro expression: {macro.Expression}");
+                Trace.TraceError($"Cannot parse macro expression: {expression}");
             }
             catch (Exception e)
             {
-                Trace.TraceError($"Cannot parse macro expression: {macro.Expression}: {e.Message}");
+                Trace.TraceError($"Cannot parse macro expression: {expression}: {e.Message}");
             }
+        }
 
         foreach (var macro in macros) Process(macro);
     }
@@ -72,11 +93,21 @@ internal class MacroPostProcessor
             BinaryExpression e => DeduceType(e),
             UnaryExpression e => DeduceType(e.Operand),
             CastExpression e => GetTypeAlias(e.TargetType),
-            CallExpression e => GetWellKnownMacroType(e.Name),
+            CallExpression e => DeduceCallType(e),
             VariableExpression e => DeduceType(e),
             ConstantExpression e => e.Value.GetType(),
             _ => throw new NotSupportedException()
         };
+    }
+
+    private TypeOrAlias DeduceCallType(CallExpression e)
+    {
+        // Try to expand function-like macros with ## token concatenation
+        var expanded = TryExpandFunctionMacro(e);
+        if (expanded != null)
+            return DeduceType(expanded);
+
+        return GetWellKnownMacroType(e.Name);
     }
 
     private TypeOrAlias DeduceType(BinaryExpression expression)
@@ -88,7 +119,6 @@ internal class MacroPostProcessor
         var rightType = DeduceType(expression.Right);
         return leftType.Precedence > rightType.Precedence ? rightType : leftType;
     }
-
 
     private TypeOrAlias DeduceType(VariableExpression expression) =>
         _macroExpressionMap.TryGetValue(expression.Name, out var nested) && nested != null
@@ -117,10 +147,76 @@ internal class MacroPostProcessor
             }
             case UnaryExpression e: return new UnaryExpression(e.OperationType, Rewrite(e.Operand));
             case CastExpression e: return new CastExpression(e.TargetType, Rewrite(e.Operand));
-            case CallExpression e: return new CallExpression(e.Name, e.Arguments.Select(Rewrite));
+            case CallExpression e: return RewriteCall(e);
             case VariableExpression e: return Rewrite(e);
             case ConstantExpression e: return e;
             default: return expression;
+        }
+    }
+
+    private IExpression RewriteCall(CallExpression e)
+    {
+        // Try to expand function-like macros with ## token concatenation
+        var expanded = TryExpandFunctionMacro(e);
+        if (expanded != null)
+            return Rewrite(expanded);
+
+        return new CallExpression(e.Name, e.Arguments.Select(Rewrite));
+    }
+
+    /// <summary>
+    /// Expands function-like macros that use ## token concatenation.
+    /// E.g. AV_PIX_FMT_NE(GRAY10BE, GRAY10LE) with body "AV_PIX_FMT_##le"
+    /// → substitutes le=GRAY10LE → evaluates ## → "AV_PIX_FMT_GRAY10LE" → VariableExpression
+    /// </summary>
+    private IExpression TryExpandFunctionMacro(CallExpression call)
+    {
+        if (!_functionMacroMap.TryGetValue(call.Name, out var macroDef))
+            return null;
+
+        var args = call.Arguments.ToArray();
+        if (args.Length != macroDef.Params.Length)
+            return null;
+
+        // Build parameter → argument name map
+        var paramMap = new Dictionary<string, string>();
+        for (var i = 0; i < macroDef.Params.Length; i++)
+        {
+            if (args[i] is VariableExpression varExpr)
+                paramMap[macroDef.Params[i]] = varExpr.Name;
+            else if (args[i] is ConstantExpression constExpr)
+                paramMap[macroDef.Params[i]] = constExpr.Value.ToString();
+            else
+                return null; // Can't expand non-trivial arguments
+        }
+
+        // Substitute parameters in the body and evaluate ## concatenation
+        var body = macroDef.Body;
+
+        // First substitute parameters (both with ## and standalone)
+        foreach (var (param, arg) in paramMap)
+            body = body.Replace(param, arg);
+
+        // Then evaluate ## (token concatenation = string join)
+        body = body.Replace("##", "");
+        body = body.Replace("  ", " ").Trim();
+
+        // Try to parse the result as a single identifier/expression
+        if (string.IsNullOrWhiteSpace(body))
+            return null;
+
+        // If result is a single token (no spaces, no operators), treat as variable
+        if (!body.Contains(' ') && !body.Contains('('))
+            return new VariableExpression(body);
+
+        // Otherwise try to parse as expression
+        try
+        {
+            return ClangMacroParser.Parser.Parse(body);
+        }
+        catch
+        {
+            return null;
         }
     }
 
@@ -143,7 +239,6 @@ internal class MacroPostProcessor
             _ => throw new NotSupportedException()
         };
     }
-
 
     internal TypeOrAlias GetWellKnownMacroType(string macroName)
     {

@@ -107,6 +107,7 @@ UpgradeLog*.XML
 
 # Local
 /FFmpeg.AutoGen.Example/frames
+/frames
 
 # FFmpeg binaries (download via FFmpeg/download-ffmpeg.ps1)
 FFmpeg/bin/

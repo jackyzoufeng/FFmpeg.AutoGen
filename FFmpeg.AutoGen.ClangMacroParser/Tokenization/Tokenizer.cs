@@ -10,7 +10,7 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Tokenization
         private static readonly HashSet<char> HexDigits = new("abcdef");
         private static readonly HashSet<char> Separators = new(" \\\r\n\t");
         private static readonly HashSet<char> NumberEnd = new("ulfd");
-        private static readonly HashSet<char> Operators = new("+-*/<>=|~!^&");
+        private static readonly HashSet<char> Operators = new("+-*/<>=|~!^&#");
         private static readonly HashSet<char> Punctuators = new(",()[]{}");
 
         private static readonly HashSet<string> Keywords = new()
@@ -110,7 +110,21 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Tokenization
                 var c = Current();
 
                 if (Separators.Contains(c)) Skip(Separators.Contains);
-                else if (IsNumberStart(c)) yield return Number();
+                else if (IsNumberStart(c))
+                {
+                    var num = Number();
+                    // Handle tokens like 0BGR, 0RGB where digit-prefixed identifiers
+                    // are used as macro arguments (e.g. AV_PIX_FMT_NE(0BGR, RGB0))
+                    if (CanRead() && IsIdentifierStart(Current()))
+                    {
+                        var rest = new string(YieldWhile(IsIdentifierStart, IsId).ToArray());
+                        yield return Token(TokenType.Identifier, num.Value + rest);
+                    }
+                    else
+                    {
+                        yield return num;
+                    }
+                }
                 else if (IsIdentifierStart(c)) yield return IdentifierOrKeyword();
                 else if (IsDoubleQuote(c)) yield return String();
                 else if (IsQuote(c)) yield return Char();

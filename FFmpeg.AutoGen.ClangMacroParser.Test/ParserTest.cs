@@ -112,5 +112,33 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Test
             var e = Parser.Parse("0x1UL << AVChannel.AV_CHAN_FRONT_LEFT");
             // todo finalize test
         }
+
+        [TestMethod]
+        public void TokenConcat()
+        {
+            var e = Parser.Parse("AV_PIX_FMT_ ## le");
+            CastExpression<BinaryExpression>(e,
+                x =>
+                {
+                    Assert.AreEqual(OperationType.TokenConcat, x.OperationType);
+                    CastExpression<VariableExpression>(x.Left, y => Assert.AreEqual("AV_PIX_FMT_", y.Name));
+                    CastExpression<VariableExpression>(x.Right, y => Assert.AreEqual("le", y.Name));
+                });
+        }
+
+        [TestMethod]
+        public void FunctionCallWithDigitPrefixedArg()
+        {
+            var e = Parser.Parse("AV_PIX_FMT_NE(0BGR, RGB0)");
+            CastExpression<CallExpression>(e,
+                x =>
+                {
+                    Assert.AreEqual("AV_PIX_FMT_NE", x.Name);
+                    var args = x.Arguments.ToArray();
+                    Assert.AreEqual(2, args.Length);
+                    CastExpression<VariableExpression>(args[0], y => Assert.AreEqual("0BGR", y.Name));
+                    CastExpression<VariableExpression>(args[1], y => Assert.AreEqual("RGB0", y.Name));
+                });
+        }
     }
 }

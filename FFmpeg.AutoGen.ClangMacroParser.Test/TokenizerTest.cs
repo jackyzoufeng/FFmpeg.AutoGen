@@ -104,5 +104,36 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Test
             Assert.IsTrue(tokens.Length == 1);
             AssertAreEqual(Token(TokenType.Identifier, "A.B"), tokens[0]);
         }
+
+        [TestMethod]
+        public void TokenConcat()
+        {
+            var tokens = Tokenize(@"AV_PIX_FMT_ ## le");
+            Assert.AreEqual(3, tokens.Length);
+            AssertAreEqual(Token(TokenType.Identifier, "AV_PIX_FMT_"), tokens[0]);
+            AssertAreEqual(Token(TokenType.Operator, "##"), tokens[1]);
+            AssertAreEqual(Token(TokenType.Identifier, "le"), tokens[2]);
+        }
+
+        [TestMethod]
+        public void DigitPrefixedIdentifier()
+        {
+            var tokens = Tokenize(@"0BGR");
+            Assert.AreEqual(1, tokens.Length);
+            AssertAreEqual(Token(TokenType.Identifier, "0BGR"), tokens[0]);
+        }
+
+        [TestMethod]
+        public void DigitPrefixedIdentifierInCall()
+        {
+            var tokens = Tokenize(@"AV_PIX_FMT_NE(0BGR, RGB0)");
+            Assert.AreEqual(6, tokens.Length);
+            AssertAreEqual(Token(TokenType.Identifier, "AV_PIX_FMT_NE"), tokens[0]);
+            AssertAreEqual(Token(TokenType.Punctuator, "("), tokens[1]);
+            AssertAreEqual(Token(TokenType.Identifier, "0BGR"), tokens[2]);
+            AssertAreEqual(Token(TokenType.Punctuator, ","), tokens[3]);
+            AssertAreEqual(Token(TokenType.Identifier, "RGB0"), tokens[4]);
+            AssertAreEqual(Token(TokenType.Punctuator, ")"), tokens[5]);
+        }
     }
 }
