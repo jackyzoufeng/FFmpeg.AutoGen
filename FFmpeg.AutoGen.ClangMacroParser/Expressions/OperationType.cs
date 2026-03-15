@@ -20,6 +20,7 @@
         GreaterThanOrEqual,
         GreaterThan,
         LessThan,
-        LessThanOrEqual
+        LessThanOrEqual,
+        TokenConcat
     }
 }

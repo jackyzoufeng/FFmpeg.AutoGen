@@ -26,7 +26,8 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Expressions
             { OperationType.GreaterThanOrEqual, 6 },
             { OperationType.GreaterThan, 6 },
             { OperationType.LessThan, 6 },
-            { OperationType.LessThanOrEqual, 6 }
+            { OperationType.LessThanOrEqual, 6 },
+            { OperationType.TokenConcat, 1 }
         };
 
         public static int GetPrecedence(this OperationType operationType) => OperationPrecedence[operationType];
@@ -54,6 +55,7 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Expressions
                 case ">": return OperationType.GreaterThan;
                 case "<": return OperationType.LessThan;
                 case "<=": return OperationType.LessThanOrEqual;
+                case "##": return OperationType.TokenConcat;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value));
             }
@@ -82,6 +84,7 @@ namespace FFmpeg.AutoGen.ClangMacroParser.Expressions
                 case OperationType.GreaterThan: return ">";
                 case OperationType.LessThan: return "<";
                 case OperationType.LessThanOrEqual: return "<=";
+                case OperationType.TokenConcat: return "##";
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(operationType));
