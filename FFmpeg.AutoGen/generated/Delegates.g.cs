@@ -1,11 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 
-#if NET6_0_OR_GREATER
-using CLong = System.Runtime.InteropServices.CLong;
-using CULong = System.Runtime.InteropServices.CULong;
-#endif
-
 namespace FFmpeg.AutoGen;
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -355,7 +350,7 @@ public unsafe struct AVIOContext_seek_func
 }
 
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public unsafe delegate CULong AVIOContext_update_checksum (CULong @checksum, byte* @buf, uint @size);
+public unsafe delegate ulong AVIOContext_update_checksum (ulong @checksum, byte* @buf, uint @size);
 public unsafe struct AVIOContext_update_checksum_func
 {
     public IntPtr Pointer;
